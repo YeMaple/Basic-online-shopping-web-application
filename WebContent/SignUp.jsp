@@ -8,5 +8,26 @@
 </head>
 <body>
 <h1>Hello Jerry!</h1>
+<form action="">
+User name:<br>
+<input type="text" name="usr_name" value="">
+<br>
+Role:<br>
+<select name="age">
+  <option value="owner">Owner</option>
+  <option value="customer">Customer</option>
+</select>
+<br>
+Age:<br>
+<input type="number" name="age" min="1" max="150">
+<br>
+State:<br>
+<select name="state">
+  <option value="ca">CA</option>
+  <option value="nv">NV</option>
+  <option value="oh">OH</option>
+</select>
+<br><br>
+<input type="submit" value="Signup">
 </body>
 </html>
