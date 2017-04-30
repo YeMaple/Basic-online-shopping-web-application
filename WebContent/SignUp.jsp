@@ -7,9 +7,9 @@
 <title>Insert title here</title>
 </head>
 <body>
-<h1>Hello Jerry!</h1>
+<h1>Signup Page</h1>
 <%-- Import the java.sql package --%>
-<%@ page import="java.sql.*"%>
+<%@ page import="java.sql.*, java.io.PrintWriter"%>
 <%-- Open connection code --%>
 <%
 	Connection conn = null;
@@ -40,7 +40,7 @@
 	    pstmt = conn
 	    .prepareStatement("INSERT INTO appuser (name, role, age, state) VALUES (?, ?, ?, ?)");
 	
-	    pstmt.setString(1, request.getParameter("name"));
+	    pstmt.setString(1, request.getParameter("usr_name"));
 	    pstmt.setString(2, request.getParameter("role"));
 	    pstmt.setInt(3, Integer.parseInt(request.getParameter("age")));
 	    pstmt.setString(4, request.getParameter("state"));
@@ -79,8 +79,6 @@ State:<br>
 
 <%-- Close connection --%>
 <%
-	//Close the ResultSet
-	//rs.close();
 	
 	// Close the Connection
 	conn.close();
@@ -89,6 +87,12 @@ State:<br>
 	// Wrap the SQL exception in a runtime exception to propagate
 	// it upwards
 	throw new RuntimeException(e);
+	}
+	
+	String action = request.getParameter("action");
+	// Check if an insertion is requested
+	if (action != null && action.equals("insert")) {
+		response.sendRedirect("Login.jsp");
 	}
 %>
 

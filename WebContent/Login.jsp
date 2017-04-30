@@ -12,7 +12,7 @@ Please login with your user information<p>
 	Your name:<input type="text" size="20" name="user"/><p>
     <input type="submit" value="Login"/>
 </form>
-<form action="Signup.jsp">
+<form action="SignUp.jsp">
     <input type="submit" value="Signup"/>
 </form>
 </body>
