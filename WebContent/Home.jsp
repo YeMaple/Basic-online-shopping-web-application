@@ -61,15 +61,25 @@ Welcome <%=user %> <p>
 			// if the user's role is owner
 			if(rs.getString("role").equals("owner")){
 		%>
-		<button onclick="window.open('Categories.jsp')">Categories</button>
-		<button onclick="window.open('Products.jsp')">Products</button>
+		<form action="Categories.jsp", method="POST">
+			<button>Categories</button>
+		</form>
+		<form action="Products.jsp", method="POST">
+			<button>Products</button>
+		</form>
 		<%
 			}else{
 		%>
-		<button onclick="window.open('Buy_Shopping_cart.jsp')">Checkout</button>
+		<form action="Buy_Shopping_cart.jsp", method="POST">
+			<button>Checkout</button>
+		</form>
 		<%} %>
-		<button onclick="window.open('Product_Browsing.jsp')">Search Products</button>
-		<button onclick="window.open('Product_Order.jsp')">Shopping Cart</button>
+		<form action="Product_Browsing.jsp", method="POST">
+			<button>Search Products</button>
+		</form>
+		<form action="Product_Order.jsp", method="POST">
+			<button>Shopping Cart</button>
+		</form>
 	</div>
 </div>
 
