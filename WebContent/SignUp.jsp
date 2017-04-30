@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Signup page</title>
+<title>Insert title here</title>
 </head>
 <body>
 <h1>Signup Page</h1>
@@ -23,7 +23,7 @@
     	// Open a connection to the database using DriverManager
     	conn = DriverManager.getConnection(
         	"jdbc:postgresql://localhost/shopping_db?" +
-        	"user=postgres&password=KaVaLa0096");
+        	"user=postgres&password=postgres");
 %> 
 
 <%-- Insertion Code --%>
@@ -36,7 +36,7 @@
 	    conn.setAutoCommit(false);
 	
 	    // Create the prepared statement and use it to
-	    // INSERT user information INTO the appuser table.
+	    // INSERT student values INTO the students table.
 	    pstmt = conn
 	    .prepareStatement("INSERT INTO appuser (name, role, age, state) VALUES (?, ?, ?, ?)");
 	
@@ -82,19 +82,17 @@ State:<br>
 	
 	// Close the Connection
 	conn.close();
+	if (action != null && action.equals("insert")) {
+		response.sendRedirect("Success.jsp");
+	}
 	} catch (SQLException e) {
-	
 	// Wrap the SQL exception in a runtime exception to propagate
 	// it upwards
-	throw new RuntimeException(e);
+	session.setAttribute("failure", "SignUp");
+	response.sendRedirect("Failure.jsp");
+	//throw new RuntimeException(e);
 	}
-	
-	String action = request.getParameter("action");
-	// Check if an signup submit is requested
-	if (action != null && action.equals("insert")) {
-		// signup successfully and redirect to login page
-		response.sendRedirect("Login.jsp");
-	}
+
 %>
 
 </body>
