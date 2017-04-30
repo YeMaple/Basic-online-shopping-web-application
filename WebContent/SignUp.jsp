@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>Signup</title>
 </head>
 <body>
 <h1>Signup Page</h1>
@@ -36,7 +36,7 @@
 	    conn.setAutoCommit(false);
 	
 	    // Create the prepared statement and use it to
-	    // INSERT student values INTO the students table.
+	    // INSERT user values INTO the appuser table.
 	    pstmt = conn
 	    .prepareStatement("INSERT INTO appuser (name, role, age, state) VALUES (?, ?, ?, ?)");
 	
