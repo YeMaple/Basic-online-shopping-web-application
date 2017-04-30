@@ -9,7 +9,7 @@
 <body>
 <h1>Signup Page</h1>
 <%-- Import the java.sql package --%>
-<%@ page import="java.sql.*, java.io.PrintWriter"%>
+<%@ page import="java.sql.*, javax.sql.*, javax.naming.*"%>
 <%-- Open connection code --%>
 <%
 	Connection conn = null;
@@ -17,13 +17,21 @@
 	ResultSet rs = null;
 
 	try {
-    	// Registering Postgresql JDBC driver with the DriverManager
-    	Class.forName("org.postgresql.Driver");
+        /*
+		// Obtain the environment naming context
+        Context initCtx = new InitialContext();
+        // Look up the data source
+        DataSource ds = (DataSource) initCtx.lookup("java:comp/env/jdbc/ShoppingDBPool");
+        // Allocate and use a connection from the pool
+        conn = ds.getConnection();
+        */
+        // Registering Postgresql JDBC driver with the DriverManager
+        Class.forName("org.postgresql.Driver");
 
-    	// Open a connection to the database using DriverManager
-    	conn = DriverManager.getConnection(
-        	"jdbc:postgresql://localhost/shopping_db?" +
-        	"user=postgres&password=postgres");
+        // Open a connection to the database using DriverManager
+        conn = DriverManager.getConnection(
+            "jdbc:postgresql://localhost/shopping_db?" +
+            "user=postgres&password=postgres");
 %> 
 
 <%-- Insertion Code --%>
@@ -86,11 +94,10 @@ State:<br>
 		response.sendRedirect("Success.jsp");
 	}
 	} catch (SQLException e) {
-	// Wrap the SQL exception in a runtime exception to propagate
-	// it upwards
-	session.setAttribute("failure", "SignUp");
-	response.sendRedirect("Failure.jsp");
-	//throw new RuntimeException(e);
+	// Wrap the SQL exception in a runtime exception to propagate it upwards
+	//session.setAttribute("failure", "SignUp");
+	//response.sendRedirect("Failure.jsp");
+	throw new RuntimeException(e);
 	}
 
 %>

@@ -33,7 +33,7 @@
 	    	// Open a connection to the database using DriverManager
 	    	conn = DriverManager.getConnection(
 	        	"jdbc:postgresql://localhost/shopping_db?" +
-	        	"user=postgres&password=KaVaLa0096");
+	        	"user=postgres&password=postgres");
 %>
 
 <%-- -------- SELECT User Info Code -------- --%>
