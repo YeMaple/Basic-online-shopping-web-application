@@ -8,12 +8,58 @@
 </head>
 <body>
 <h1>Hello Jerry!</h1>
-<form action="">
+<%-- Import the java.sql package --%>
+<%@ page import="java.sql.*"%>
+<%-- Open connection code --%>
+<%
+	Connection conn = null;
+	PreparedStatement pstmt = null;
+	ResultSet rs = null;
+
+	try {
+    	// Registering Postgresql JDBC driver with the DriverManager
+    	Class.forName("org.postgresql.Driver");
+
+    	// Open a connection to the database using DriverManager
+    	conn = DriverManager.getConnection(
+        	"jdbc:postgresql://localhost/shopping_db?" +
+        	"user=postgres&password=KaVaLa0096");
+%> 
+
+<%-- Insertion Code --%>
+<%
+	String action = request.getParameter("action");
+	// Check if an insertion is requested
+	if (action != null && action.equals("insert")) {
+	
+	    // Begin transaction
+	    conn.setAutoCommit(false);
+	
+	    // Create the prepared statement and use it to
+	    // INSERT student values INTO the students table.
+	    pstmt = conn
+	    .prepareStatement("INSERT INTO appuser (name, role, age, state) VALUES (?, ?, ?, ?)");
+	
+	    pstmt.setString(1, request.getParameter("name"));
+	    pstmt.setString(2, request.getParameter("role"));
+	    pstmt.setInt(3, Integer.parseInt(request.getParameter("age")));
+	    pstmt.setString(4, request.getParameter("state"));
+	    int rowCount = pstmt.executeUpdate();
+	    
+	    // Commit transaction
+	    conn.commit();
+	    conn.setAutoCommit(true);
+	}
+%>
+
+<%-- Insert content --%>
+<form action="SignUp.jsp", method="POST">
+<input type="hidden" name="action" value="insert"/>
 User name:<br>
 <input type="text" name="usr_name" value="">
 <br>
 Role:<br>
-<select name="age">
+<select name="role">
   <option value="owner">Owner</option>
   <option value="customer">Customer</option>
 </select>
@@ -29,5 +75,22 @@ State:<br>
 </select>
 <br><br>
 <input type="submit" value="Signup">
+</form>
+
+<%-- Close connection --%>
+<%
+	//Close the ResultSet
+	//rs.close();
+	
+	// Close the Connection
+	conn.close();
+	} catch (SQLException e) {
+	
+	// Wrap the SQL exception in a runtime exception to propagate
+	// it upwards
+	throw new RuntimeException(e);
+	}
+%>
+
 </body>
 </html>
