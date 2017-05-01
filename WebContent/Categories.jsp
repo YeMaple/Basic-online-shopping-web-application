@@ -44,10 +44,123 @@ Welcome <%=user %> <p>
                     "user=postgres&password=postgres");        
     
 %>
-<%-- Select category info code --%>
+<table>
+    <tr>
+        <td>
+            <%-- Insertion code --%>
+            <%
+                String action = request.getParameter("action");
+                if (action != null && action.equals("insert")) {
+                    // Begin transaction
+                    conn.setAutoCommit(false);
+
+                    // Create prepared statement and use for insertion
+                    pstmt = conn.prepareStatement("INSERT INTO Category (name, description) VALUES (?, ?)");
+                    pstmt.setString(1, request.getParameter("name"));
+                    pstmt.setString(2, request.getParameter("description"));
+                    int rowCount = pstmt.executeUpdate();
+
+                    // Commit 
+                    conn.commit();
+                    conn.setAutoCommit(true);
+                }
+            %>
+
+            <%-- Update code --%>
+            <%
+                if (action != null && action.equals("update")) {
+                    // Begin transaction
+                    conn.setAutoCommit(false);
+
+                    // Create prepared statement and use for update
+                    pstmt = conn.prepareStatement("UPDATE Category SET name = ?, description = ?");
+                    pstmt.setString(1, request.getParameter("name"));
+                    pstmt.setString(2, request.getParameter("description"));
+                    int rowCount = pstmt.executeUpdate();
+
+                    // Commit
+                    conn.commit();
+                    conn.setAutoCommit(true);
+                }
+            %>
+
+            <%-- Delete code --%>
+            <%
+                if (action != null && action.equals("delete")) {
+                    // Begin transaction
+                    conn.setAutoCommit(false);
+
+                    // Create prepared statement and use for delete
+                    pstmt = conn.prepareStatement("DELETE FROM Category WHERE id = ?");
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("id")));
+                    int rowCount = pstmt.executeUpdate();
+
+                    // Commit
+                    conn.commit();
+                    conn.setAutoCommit(true);
+                }
+            %>
+
+            <%-- Select code --%>
+            <%
+                // Create the statement
+                Statement statement = conn.createStatement();
+
+                // Use the created statement to SELECT from categories table.
+                rs = statement.executeQuery("SELECT * FROM Category");
+
+            %>
+        </td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <form action="Categories.jsp" method="POST">
+            <input type="hidden" name="action" value="insert"/>
+            <th>&nbsp;</th>
+            <th><input value="" name="name"/></th>
+            <th><input value="" name="description"/></th>
+            <th><input type="submit" value="Insert"/></th>
+        </form>
+    </tr>
+    <%-- Iteration code --%>
+    <%
+        while (rs.next()) {
+    %>
+    <tr>
+        <form action="Categories.jsp" method="POST">
+            <input type="hidden" name="action" value="update"/>
+            <input type="hidden" name="id" value="<%=rs.getInt("id")%>"/>
+            <%-- Get the id --%>
+            <td>
+                 <%=rs.getInt("id")%>
+            </td>
+            <%-- Get the name --%>
+            <td>
+                <input value="<%=rs.getString("name")%>" name="name"/>
+            </td>
+             <%-- Get the description --%>
+            <td>
+                <input value="<%=rs.getString("description")%>" name="description"/>
+            </td>    
+            <td><input type="submit" value="Update"></td>
+        </form>   
+        <form action="Categories.jsp" method="POST">
+            <input type="hidden" name="action" value="delete"/>
+            <input type="hidden" value="<%=rs.getInt("id")%>" name="id"/>
+            <%-- Button --%>
+            <td><input type="submit" value="Delete"/></td>
+        </form>    
+    </tr>
+</table>
 <%-- Close connection code --%>
 <%
-    
+        }
             rs.close();
             conn.close();
         } catch (SQLException e) {
@@ -79,5 +192,8 @@ Welcome <%=user %> <p>
         }
     }
 %>
+<form action="Home.jsp">
+    <button>Home</button>
+</form>
 </body>
 </html>
