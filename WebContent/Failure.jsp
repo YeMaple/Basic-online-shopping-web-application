@@ -17,6 +17,18 @@
     %>
     	This page is available to owners only<p>
     <%
+        } else if (type != null && type.equals("InsertCategory")) {
+    %>
+        Insert Category Failure<p>
+    <%
+        } else if (type != null && type.equals("UpdateCategory")) {
+    %>
+        Update Category Failure<p>
+    <%
+        } else if (type != null && type.equals("DeleteCategory")) {
+    %> 
+        Delete Category Failure<p>
+    <%
         }
     %>
 </body>

@@ -33,7 +33,8 @@ Welcome <%=user %> <p>
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-
+        ResultSet temp = null;
+        String action = request.getParameter("action");
         try {
             // Registering Postgresql JDBC driver with the DriverManager
             Class.forName("org.postgresql.Driver");
@@ -49,7 +50,6 @@ Welcome <%=user %> <p>
         <td>
             <%-- Insertion code --%>
             <%
-                String action = request.getParameter("action");
                 if (action != null && action.equals("insert")) {
                     // Begin transaction
                     conn.setAutoCommit(false);
@@ -112,7 +112,7 @@ Welcome <%=user %> <p>
             %>
         </td>
     </tr>
-</table>
+
 <table>
     <tr>
         <th>ID</th>
@@ -150,23 +150,49 @@ Welcome <%=user %> <p>
             </td>    
             <td><input type="submit" value="Update"></td>
         </form>   
+        <%
+        	pstmt = conn.prepareStatement("SELECT COUNT(p) as cnt FROM Product p WHERE p.category_id = ?");
+        	pstmt.setInt(1, rs.getInt("id"));
+        	temp = pstmt.executeQuery();
+        	if (temp.next()) {
+        		if (temp.getInt("cnt") == 0) {
+        %>
         <form action="Categories.jsp" method="POST">
             <input type="hidden" name="action" value="delete"/>
             <input type="hidden" value="<%=rs.getInt("id")%>" name="id"/>
             <%-- Button --%>
             <td><input type="submit" value="Delete"/></td>
-        </form>    
+        </form>
+        <%  
+        		}
+        	}
+        %>   
     </tr>
+    <%
+        }
+    %>
+</table>
 </table>
 <%-- Close connection code --%>
 <%
-        }
+ 
             rs.close();
+            temp.close();
             conn.close();
         } catch (SQLException e) {
             // Wrap the SQL exception in a runtime exception to propagate
             // it upwards
-            throw new RuntimeException(e);       
+            //throw new RuntimeException(e);  
+            if (action != null && action.equals("insert")) {
+                session.setAttribute("failure", "InsertCategory");
+                response.sendRedirect("Failure.jsp");
+            } else if (action != null && action.equals("update")) {
+                session.setAttribute("failure", "UpdateCategory");
+                response.sendRedirect("Failure.jsp");
+            } else if (action != null && action.equals("delete")) {
+                session.setAttribute("failure", "DeleteCategory");
+                response.sendRedirect("Failure.jsp");
+            }
         }
         finally {
         // Release resources in a finally block in reverse-order of
