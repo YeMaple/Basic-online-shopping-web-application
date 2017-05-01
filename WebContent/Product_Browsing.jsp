@@ -8,5 +8,10 @@
 </head>
 <body>
 <h1>Product Browser</h1>
+<% 
+	String user = request.getParameter("user");
+	
+%>
+Hello! <%=user %>
 </body>
 </html>

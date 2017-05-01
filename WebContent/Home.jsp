@@ -62,22 +62,32 @@ Welcome <%=user %> <p>
 			if(rs.getString("role").equals("owner")){
 		%>
 		<form action="Categories.jsp", method="POST">
+			<input type = "hidden" name = "user" value = <%=user %>/>
+			<input type = "hidden" name = "role" value = <%=rs.getString("role") %>/>
 			<button>Categories</button>
 		</form>
 		<form action="Products.jsp", method="POST">
+			<input type = "hidden" name = "user" value = <%=user %>/>
+			<input type = "hidden" name = "role" value = <%=rs.getString("role") %>/>
 			<button>Products</button>
 		</form>
 		<%
 			}else{
 		%>
 		<form action="Buy_Shopping_cart.jsp", method="POST">
+			<input type = "hidden" name = "user" value = <%=user %>/>
+			<input type = "hidden" name = "role" value = <%=rs.getString("role") %>/>
 			<button>Checkout</button>
 		</form>
 		<%} %>
 		<form action="Product_Browsing.jsp", method="POST">
+			<input type = "hidden" name = "user" value = <%=user %>/>
+			<input type = "hidden" name = "role" value = <%=rs.getString("role") %>/>
 			<button>Search Products</button>
 		</form>
 		<form action="Product_Order.jsp", method="POST">
+			<input type = "hidden" name = "user" value = <%=user %>/>
+			<input type = "hidden" name = "role" value = <%=rs.getString("role") %>/>
 			<button>Shopping Cart</button>
 		</form>
 	</div>
