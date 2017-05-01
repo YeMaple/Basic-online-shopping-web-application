@@ -7,14 +7,19 @@
 <title>Home Page</title>
 </head>
 <body>
-<% 
+<%
+	String sessionUser = (String) session.getAttribute("user");
 	String user = request.getParameter("user");
 	//System.out.println("get user!!!!!!!!!!!");
-	if(user == null){
+	if(user == null && sessionUser == null){
 		//System.out.println("Redirect!!!!!!!!!!!");
 		response.sendRedirect("Login.jsp");
 	}else{
-		session.setAttribute("user", user);
+		if (sessionUser == null) {
+			session.setAttribute("user", user);
+		} else {
+			user = sessionUser;
+		}
 %>
 
 <%-- Import the java.sql package --%>
@@ -58,6 +63,7 @@ Welcome <%=user %> <p>
 	<div>
 		<%
 		if(rs.next()){
+			session.setAttribute("role", rs.getString("role"));
 			// if the user's role is owner
 			if(rs.getString("role").equals("owner")){
 		%>

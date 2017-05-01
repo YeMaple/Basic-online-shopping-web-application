@@ -11,7 +11,11 @@
         String type = (String) session.getAttribute("failure");
         if (type != null && type.equals("SignUp")) {
     %>
-        SignUpFailure<p>
+        SignUp Failure<p>
+    <%
+        } else if (type != null && type.equals("Access")) {
+    %>
+    	This page is available to owners only<p>
     <%
         }
     %>

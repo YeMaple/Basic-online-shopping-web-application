@@ -8,6 +8,76 @@
 </head>
 <body>
 <h1>Categories</h1>
+<%-- Check session user --%>
+<%
+    String user = (String)session.getAttribute("user");
+    String role = (String)session.getAttribute("role");
+    //System.out.println(role);
+    //System.out.println(user);
+    if (user == null || role == null) {
+        response.sendRedirect("Login.jsp");
+    } else if (role != null && role.equals("customer")) {
+        session.setAttribute("failure", "Access");
+        response.sendRedirect("Failure.jsp");
+    } else {
+%>
 
+Welcome <%=user %> <p>
+
+<%-- Import the java.sql package --%>
+<%@ page import="java.sql.*, java.io.PrintWriter"%>
+
+
+<%-- Open connection code --%>
+<%
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            // Registering Postgresql JDBC driver with the DriverManager
+            Class.forName("org.postgresql.Driver");
+    
+            // Open a connection to the database using DriverManager
+            conn = DriverManager.getConnection(
+                    "jdbc:postgresql://localhost/shopping_db?" +
+                    "user=postgres&password=postgres");        
+    
+%>
+<%-- Select category info code --%>
+<%-- Close connection code --%>
+<%
+    
+            rs.close();
+            conn.close();
+        } catch (SQLException e) {
+            // Wrap the SQL exception in a runtime exception to propagate
+            // it upwards
+            throw new RuntimeException(e);       
+        }
+        finally {
+        // Release resources in a finally block in reverse-order of
+        // their creation
+        if (rs != null) {
+            try {
+                rs.close();
+            } catch (SQLException e) { } // Ignore
+                rs = null;
+        }
+        if (pstmt != null) {
+            try {
+                pstmt.close();
+            } catch (SQLException e) { } // Ignore
+            pstmt = null;
+        }
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException e) { } // Ignore
+                conn = null;
+            }
+        }
+    }
+%>
 </body>
 </html>

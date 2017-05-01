@@ -7,6 +7,12 @@
 <title>Login</title>
 </head>
 <body>
+<%
+String sessionUser = (String) session.getAttribute("user");
+if (sessionUser != null) {
+	response.sendRedirect("Home.jsp");
+} else {
+%>
 Please login with your user information<p>
 <form method="POST" action="Home.jsp">
 	Your name:<input type="text" size="20" name="user"/><p>
@@ -16,4 +22,7 @@ Please login with your user information<p>
     <input type="submit" value="Signup"/>
 </form>
 </body>
+<%
+}
+%>
 </html>
