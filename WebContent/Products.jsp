@@ -8,5 +8,14 @@
 </head>
 <body>
 <h1>Products</h1>
+<table>
+	<tr>
+		<td>
+		<jsp:include page="/Categories_Link.jsp"/>
+		</td>
+		<td>
+		<jsp:include page="/List_product.jsp"/>
+	</tr>
+</table>
 </body>
 </html>

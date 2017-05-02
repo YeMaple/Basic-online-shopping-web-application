@@ -34,7 +34,7 @@
 	    	// Open a connection to the database using DriverManager
 	    	conn = DriverManager.getConnection(
 	        	"jdbc:postgresql://localhost/shopping_db?" +
-	        	"user=postgres&password=KaVaLa0096");
+	        	"user=postgres&password=postgres");
 %>
 
 <%-- Get categories list code --%>
@@ -99,7 +99,7 @@
 	    
 	    pstmt = conn
 	    .prepareStatement("INSERT INTO contains (added_price, quantity, product_id, cart_id) VALUES (?, 1, ?, ?)");
-	    pstmt.setString(1, request.getParameter("price"));
+	    pstmt.setDouble(1, Double.parseDouble(request.getParameter("price")));
 	    pstmt.setInt(2, Integer.parseInt(request.getParameter("id")));
 	    pstmt.setInt(3, Integer.parseInt(cart_id));
 	    pstmt.executeUpdate();

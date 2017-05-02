@@ -12,10 +12,11 @@
 <%-- Check session user --%>
 <%
 	String user = (String) session.getAttribute("user");
+	int cart_id = Integer.parseInt((String) session.getAttribute("cart"));
 	if (user == null) {
 		response.sendRedirect("Failure.jsp?failure="+"NotLogin");
 	} else {
-}
+		String action = request.getParameter("action");
 %>
 Welcome <%=user %> <p>
 
@@ -47,15 +48,25 @@ Welcome <%=user %> <p>
                     conn.setAutoCommit(false);
 
                     // Create prepared statement and use for update
-                    pstmt = conn.prepareStatement("UPDATE Contains SET quantity = ? WEHERE product_id = ?");
-                    pstmt.setString(1, Integer.parseInt(request.getParameter("quantity")));
-                    pstmt.setString(2, Integer.parseInt(request.getParameter("product_id"));
+                    pstmt = conn.prepareStatement("UPDATE Contains SET quantity = ? WHERE product_id = ?");
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("quantity")));
+                    pstmt.setInt(2, Integer.parseInt(request.getParameter("product_id")));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit
                     conn.commit();
                     conn.setAutoCommit(true);
                 }
+            %>
+            <%-- Select code --%>
+            <%
+            	pstmt = 
+            	conn.prepareStatement(
+            	"SELECT p.id, p.name, p.sku, c.added_price, c.quantity " +
+            	"FROM Product p, Contains c " +
+            	"WHERE c.cart_id = ? AND c.product_id = p.id");
+            	pstmt.setInt(1, cart_id);
+            	rs = pstmt.executeQuery();
             %>
 		</td>
 	</tr>
@@ -66,6 +77,37 @@ Welcome <%=user %> <p>
 		<th>Price</th>
 		<th>Quantity</th>
 	</tr>
+	<%-- Iteration code --%>
+	<% 
+		while (rs.next()) {
+	%>
+	<tr>
+		<td>
+			<%=rs.getInt(1)%>
+		</td>
+		<td>
+			<%=rs.getString(2)%>
+		</td>
+		<td>
+			<%=rs.getString(3)%>
+		</td>
+		<td>
+			<%=rs.getDouble(4)%>
+		</td>
+		<form action="Product_Order.jsp" method="POST">
+           	<input type="hidden" name="action" value="update"/>
+           	<input type="hidden" name="product_id" value="<%=rs.getInt("id")%>"/>
+           	<td>
+           	<input type="number" name="quantity" min="1" value="<%=rs.getInt(5)%>"/>
+           	</td>
+           	<td>
+           	<input type="submit" value="update"/>
+           	</td>
+		</form>
+	</tr>
+	<%
+		}
+	%>
 </table>
 <%-- Close connection code --%>
 <%
@@ -76,7 +118,7 @@ Welcome <%=user %> <p>
         } catch (SQLException e) {
             // Wrap the SQL exception in a runtime exception to propagate
             // it upwards
-            //throw new RuntimeException(e);  
+            throw new RuntimeException(e);  
         }
         finally {
         // Release resources in a finally block in reverse-order of
@@ -100,9 +142,8 @@ Welcome <%=user %> <p>
                 conn = null;
             }
         }
+    }
 %>
-<%
-	}
-%>
+
 </body>
 </html>
