@@ -13,7 +13,7 @@
 	//System.out.println("get user!!!!!!!!!!!");
 	if(user == null && sessionUser == null){
 		//System.out.println("Redirect!!!!!!!!!!!");
-		response.sendRedirect("Login.jsp");
+		response.sendRedirect("Failure.jsp?failure="+"NotLogin");
 	}else{
 		if (sessionUser == null) {
 			session.setAttribute("user", user);
@@ -29,6 +29,8 @@
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
+		PreparedStatement cartst = null;
+		ResultSet cartrs = null;
 		//System.out.println("Open connection!!!!!!!!!!!");
 
 		try {
@@ -41,16 +43,19 @@
 	        	"user=postgres&password=postgres");
 %>
 
+
 <%-- -------- SELECT User Info Code -------- --%>
 <%
 		//System.out.println("Selection!!!!!!!!!!!");
 		// Create the statement
-		Statement statement = conn.createStatement();
+		//Statement statement = conn.createStatement();
 	
 		// Use the prepare statement to SELECT
 		// the user attributes FROM the appuser table.
-		pstmt = conn.prepareStatement("SELECT * FROM appuser u WHERE u.name = ?");
+		pstmt = 
+		conn.prepareStatement("SELECT u.role, c.id FROM AppUser u JOIN ShoppingCart c ON c.owner = u.id WHERE u.name = ? AND c.status = ?");
 		pstmt.setString(1, user);
+		pstmt.setString(2, "unpaid");
 		
 		rs = pstmt.executeQuery();
 %>
@@ -63,7 +68,10 @@ Welcome <%=user %> <p>
 	<div>
 		<%
 		if(rs.next()){
-			session.setAttribute("role", rs.getString("role"));
+			// Set session parameter
+			session.setAttribute("role", rs.getString(1));
+			session.setAttribute("cart", rs.getString(2));
+
 			// if the user's role is owner
 			if(rs.getString("role").equals("owner")){
 		%>
@@ -104,8 +112,9 @@ Welcome <%=user %> <p>
 		}
 		// Close the ResultSet
 		rs.close();
+		pstmt.close();
 		// Close the Statement
-		statement.close();
+		//statement.close();
 	
 		// Close the Connection
 		conn.close();

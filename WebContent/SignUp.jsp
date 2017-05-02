@@ -46,14 +46,26 @@
 	    // Create the prepared statement and use it to
 	    // INSERT user values INTO the appuser table.
 	    pstmt = conn
-	    .prepareStatement("INSERT INTO appuser (name, role, age, state) VALUES (?, ?, ?, ?)");
+	    .prepareStatement("INSERT INTO Appuser (name, role, age, state) VALUES (?, ?, ?, ?)"
+	    					,Statement.RETURN_GENERATED_KEYS);
 	
 	    pstmt.setString(1, request.getParameter("usr_name"));
 	    pstmt.setString(2, request.getParameter("role"));
 	    pstmt.setInt(3, Integer.parseInt(request.getParameter("age")));
 	    pstmt.setString(4, request.getParameter("state"));
-	    int rowCount = pstmt.executeUpdate();
+	    pstmt.executeUpdate();
+	    rs = pstmt.getGeneratedKeys();
+
+	   	int AppUserID = 0;
+	   	while (rs.next()) {
+	   		AppUserID = rs.getInt(1);
+	   	}
 	    
+	    pstmt = conn
+	    .prepareStatement("INSERT INTO ShoppingCart (status, owner) VALUES (?, ?)");
+	    pstmt.setString(1, "unpaid");
+	    pstmt.setInt(2, AppUserID);
+	    pstmt.executeUpdate();
 	    // Commit transaction
 	    conn.commit();
 	    conn.setAutoCommit(true);
@@ -91,13 +103,13 @@ State:<br>
 	// Close the Connection
 	conn.close();
 	if (action != null && action.equals("insert")) {
-		response.sendRedirect("Success.jsp");
+		response.sendRedirect("Success.jsp?success="+"SignUp");
 	}
 	} catch (SQLException e) {
 	// Wrap the SQL exception in a runtime exception to propagate it upwards
 	//session.setAttribute("failure", "SignUp");
-	//response.sendRedirect("Failure.jsp");
-	throw new RuntimeException(e);
+	response.sendRedirect("Failure.jsp?failure="+"SignUp");
+	//throw new RuntimeException(e);
 	}
 
 %>

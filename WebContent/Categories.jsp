@@ -15,10 +15,10 @@
     //System.out.println(role);
     //System.out.println(user);
     if (user == null || role == null) {
-        response.sendRedirect("Login.jsp");
+    	response.sendRedirect("Failure.jsp?failure="+"NotLogin");
     } else if (role != null && role.equals("customer")) {
-        session.setAttribute("failure", "Access");
-        response.sendRedirect("Failure.jsp");
+        //session.setAttribute("failure", "Access");
+        response.sendRedirect("Failure.jsp?failure="+"Access");
     } else {
 %>
 
@@ -73,9 +73,10 @@ Welcome <%=user %> <p>
                     conn.setAutoCommit(false);
 
                     // Create prepared statement and use for update
-                    pstmt = conn.prepareStatement("UPDATE Category SET name = ?, description = ?");
+                    pstmt = conn.prepareStatement("UPDATE Category SET name = ?, description = ? WHERE id = ?");
                     pstmt.setString(1, request.getParameter("name"));
                     pstmt.setString(2, request.getParameter("description"));
+                    pstmt.setInt(3, Integer.parseInt(request.getParameter("id")));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit
@@ -176,22 +177,31 @@ Welcome <%=user %> <p>
 <%-- Close connection code --%>
 <%
  
-            rs.close();
-            temp.close();
+            //rs.close();
+            //temp.close();
             conn.close();
+            
+            if (action != null && action.equals("insert")) {
+            	response.sendRedirect("Success.jsp?success="+"InsertCategory");
+            } else if (action != null && action.equals("update")) {
+            	response.sendRedirect("Success.jsp?success="+"UpdateCategory");
+            } else if (action != null && action.equals("delete")) {
+            	response.sendRedirect("Success.jsp?success="+"DeleteCategory");
+            }
+    
         } catch (SQLException e) {
             // Wrap the SQL exception in a runtime exception to propagate
             // it upwards
             //throw new RuntimeException(e);  
             if (action != null && action.equals("insert")) {
-                session.setAttribute("failure", "InsertCategory");
-                response.sendRedirect("Failure.jsp");
+                //ession.setAttribute("failure", "InsertCategory");
+                response.sendRedirect("Failure.jsp?failure="+"InsertCategory");
             } else if (action != null && action.equals("update")) {
-                session.setAttribute("failure", "UpdateCategory");
-                response.sendRedirect("Failure.jsp");
+                //session.setAttribute("failure", "UpdateCategory");
+                response.sendRedirect("Failure.jsp?failure"+"UpdateCategory");
             } else if (action != null && action.equals("delete")) {
-                session.setAttribute("failure", "DeleteCategory");
-                response.sendRedirect("Failure.jsp");
+                //session.setAttribute("failure", "DeleteCategory");
+                response.sendRedirect("Failure.jsp?failure="+"DeleteCategory");
             }
         }
         finally {
