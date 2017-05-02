@@ -39,6 +39,12 @@
         Delete Category Failure<p>
         <a href="Category.jsp">Please try again</a>
     <%
+        } else if (type != null && type.equals("InvalidUser")) {
+        	String wrongName = request.getParameter("WrongName");
+    %>
+    	The provided name <%=wrongName %> is not known<p>
+    	<a href="Login.jsp">Please try again</a>
+    <%
         }
     %>
 </body>

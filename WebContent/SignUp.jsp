@@ -17,14 +17,15 @@
 	ResultSet rs = null;
 
 	try {
-        /*
+       
 		// Obtain the environment naming context
         Context initCtx = new InitialContext();
         // Look up the data source
         DataSource ds = (DataSource) initCtx.lookup("java:comp/env/jdbc/ShoppingDBPool");
         // Allocate and use a connection from the pool
         conn = ds.getConnection();
-        */
+   
+        /*
         // Registering Postgresql JDBC driver with the DriverManager
         Class.forName("org.postgresql.Driver");
 
@@ -32,6 +33,7 @@
         conn = DriverManager.getConnection(
             "jdbc:postgresql://localhost/shopping_db?" +
             "user=postgres&password=postgres");
+       	*/
 %> 
 
 <%-- Insertion Code --%>
@@ -108,8 +110,8 @@ State:<br>
 	} catch (SQLException e) {
 	// Wrap the SQL exception in a runtime exception to propagate it upwards
 	//session.setAttribute("failure", "SignUp");
-	response.sendRedirect("Failure.jsp?failure="+"SignUp");
-	//throw new RuntimeException(e);
+	//response.sendRedirect("Failure.jsp?failure="+"SignUp");
+	throw new RuntimeException(e);
 	}
 
 %>

@@ -13,9 +13,8 @@
 	//System.out.println("get user!!!!!!!!!!!");
 	if(user == null){
 		//System.out.println("Redirect!!!!!!!!!!!");
-		response.sendRedirect("Login.jsp");
+		response.sendRedirect("Failure.jsp?failure="+"NotLogin");
 	}else{
-		session.setAttribute("user", user);
 %>
 
 <%-- Import the java.sql package --%>
@@ -110,22 +109,34 @@
 	}
 %>
 
-
-Hello! <%=user %>
 <div>
 	<div>
-		<form action="List_product.jsp">
+		<form action="Products.jsp">
 			<input type="hidden" name="action" value="search">
+			<%
+			int current_selection = Integer.parseInt(request.getParameter("Category_id"));
+			//System.out.println(current_selection);
+			%>
 			<select name="Category_id">
 				<option value=0> all</option>
 				<%
 					while(rs1.next()){
 						String C_name = rs1.getString("name");
+						//System.out.println(rs1.getInt("id"));
+						if (((int)rs1.getInt("id")) == current_selection) {
+							//System.out.println("!!!!!!!!!");
+				%>
+			    <option selected  value="<%= rs1.getInt("id") %>">
+			        <%=C_name %>
+			    </option>				
+				<% 
+						} else {
 				%>
 			    <option value="<%= rs1.getInt("id") %>">
 			        <%=C_name %>
 			    </option>
-			    <%
+			    <%	
+						}
 					}
 			    %>
 			</select>
@@ -178,12 +189,12 @@ Hello! <%=user %>
 		            </td>  
 		            <%-- Get the price --%>
 		            <td>
-		                <input value="<%=rs.getInt(4)%>" name="price" readonly/>
+		                <input value="<%=rs.getDouble(4)%>" name="price" readonly/>
 		            </td>
-		            <form action="List_product.jsp" method="POST">
+		            <form action="Products.jsp" method="POST">
 			            <input type="hidden" name="action" value="add"/>
 			            <input type="hidden" value="<%=rs.getInt(1)%>" name="id"/>
-			            <input type="hidden" value="<%=rs.getInt(4)%>" name="price"/>
+			            <input type="hidden" value="<%=rs.getDouble(4)%>" name="price"/>
 			            <%-- Button --%>
 			            <td><input type="submit" value="Add to cart"/></td>
 			        </form>

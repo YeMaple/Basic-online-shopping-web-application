@@ -10,7 +10,7 @@
 <%
 String sessionUser = (String) session.getAttribute("user");
 if (sessionUser != null) {
-	response.sendRedirect("Home.jsp");
+	response.sendRedirect("Home.jsp?user="+sessionUser);
 } else {
 %>
 Please login with your user information<p>

@@ -14,10 +14,8 @@
 	if(user == null && sessionUser == null){
 		//System.out.println("Redirect!!!!!!!!!!!");
 		response.sendRedirect("Failure.jsp?failure="+"NotLogin");
-	}else{
-		if (sessionUser == null) {
-			session.setAttribute("user", user);
-		} else {
+	} else {
+		if (sessionUser != null) {
 			user = sessionUser;
 		}
 %>
@@ -53,12 +51,19 @@
 		// Use the prepare statement to SELECT
 		// the user attributes FROM the appuser table.
 		pstmt = 
-		conn.prepareStatement("SELECT u.role, c.id FROM AppUser u JOIN ShoppingCart c ON c.owner = u.id WHERE u.name = ? AND c.status = ?");
+		conn.prepareStatement("SELECT u.role, c.id, u.name FROM AppUser u JOIN ShoppingCart c ON c.owner = u.id WHERE u.name = ? AND c.status = ?");
 		pstmt.setString(1, user);
 		pstmt.setString(2, "unpaid");
 		
 		rs = pstmt.executeQuery();
 %>
+		<%
+		if(rs.next()){
+			// Set session parameter
+			session.setAttribute("user", rs.getString(3));
+			session.setAttribute("role", rs.getString(1));
+			session.setAttribute("cart", rs.getString(2));
+		%>
 
 Welcome <%=user %> <p>
 <div>
@@ -66,12 +71,8 @@ Welcome <%=user %> <p>
 	<h2>Page Index</h2>
 	</div>
 	<div>
-		<%
-		if(rs.next()){
-			// Set session parameter
-			session.setAttribute("role", rs.getString(1));
-			session.setAttribute("cart", rs.getString(2));
 
+		<%
 			// if the user's role is owner
 			if(rs.getString("role").equals("owner")){
 		%>
@@ -83,17 +84,17 @@ Welcome <%=user %> <p>
 		<form action="Products.jsp", method="POST">
 			<input type = "hidden" name = "user" value = <%=user %>/>
 			<input type = "hidden" name = "role" value = <%=rs.getString("role") %>/>
+			<input type = "hidden" name = "Category_id" value = 0 />
 			<button>Products</button>
 		</form>
 		<%
-			}else{
+			}
 		%>
 		<form action="Buy_Shopping_cart.jsp", method="POST">
 			<input type = "hidden" name = "user" value = <%=user %>/>
 			<input type = "hidden" name = "role" value = <%=rs.getString("role") %>/>
 			<button>Checkout</button>
 		</form>
-		<%} %>
 		<form action="Product_Browsing.jsp", method="POST">
 			<input type = "hidden" name = "user" value = <%=user %>/>
 			<input type = "hidden" name = "role" value = <%=rs.getString("role") %>/>
@@ -109,6 +110,10 @@ Welcome <%=user %> <p>
 
 <%-- -------- Close Connection Code -------- --%>
 <%
+		} else {
+			
+			response.sendRedirect("Failure.jsp?failure="+"InvalidUser&WrongName="
+					+user);			
 		}
 		// Close the ResultSet
 		rs.close();
@@ -121,7 +126,9 @@ Welcome <%=user %> <p>
 		} catch (SQLException e) {
 			// Wrap the SQL exception in a runtime exception to propagate
 			// it upwards
-			throw new RuntimeException(e);
+			//throw new RuntimeException(e);
+			response.sendRedirect("Failure.jsp?failure="+"InvalidUser&WrongName="
+									+user);
 		}
 		finally {
 		// Release resources in a finally block in reverse-order of
@@ -146,6 +153,7 @@ Welcome <%=user %> <p>
 			}
 		}
 	}
+
 %>
 </body>
 </html>

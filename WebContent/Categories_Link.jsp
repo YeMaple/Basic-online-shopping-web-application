@@ -33,12 +33,17 @@
     rs = statement.executeQuery("SELECT * FROM Category");
 %>
 <ul>
+    <li>
+    	<a href="Products.jsp?action=search&Category_id=0">
+    		All
+    	</a>
+    </li>
     <%-- Iteration code --%>
     <%
         while (rs.next()) {
     %>
     <li>
-        <a href="Products.jsp?Category_id=<%=rs.getInt("id")%>">
+        <a href="Products.jsp?action=search&Category_id=<%=rs.getInt("id")%>">
         	<%=rs.getString("name")%>
         </a>
     </li>
