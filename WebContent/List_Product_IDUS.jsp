@@ -4,6 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
 </head>
 <body>
 <% 
@@ -17,13 +18,15 @@
 %>
 
 <%-- Import the java.sql package --%>
-<%@ page import="java.sql.*"%>
+<%@ page import="java.sql.*, java.util.*"%>
 <%-- Open connection code --%>
 <%
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs1 = null;
 		ResultSet rs = null;
+		ArrayList<String> categories = new ArrayList();
+		ArrayList<Integer> category_ids = new ArrayList();
 
 		try {
 	    	// Registering Postgresql JDBC driver with the DriverManager
@@ -42,6 +45,12 @@
 	// Use the created statement to SELECT
 	// the student attributes FROM the Student table.
 	rs1 = statement.executeQuery("SELECT * FROM category");
+	
+	// Store the category value into arraylist
+	while(rs1.next()){
+		categories.add(rs1.getString("name"));
+		category_ids.add(rs1.getInt("id"));
+	}
 %>
 
 <%-- -------- SELECT product info Code -------- --%>
@@ -89,7 +98,7 @@
 
 <div>
 	<div>
-		<form action="Product_Browsing.jsp">
+		<form action="Products.jsp">
 			<input type="hidden" name="action" value="search">
 			<%
 			String curr = request.getParameter("Category_id");
@@ -102,23 +111,25 @@
 			<select name="Category_id">
 				<option value=0> all</option>
 				<%
-					while(rs1.next()){
-						String C_name = rs1.getString("name");
+					int i = 0;
+					while(i < categories.size()){
+						String C_name = categories.get(i);
 						//System.out.println(rs1.getInt("id"));
-						if (((int)rs1.getInt("id")) == current_selection) {
+						if (category_ids.get(i) == current_selection) {
 							//System.out.println("!!!!!!!!!");
 				%>
-			    <option selected  value="<%= rs1.getInt("id") %>">
+			    <option selected  value="<%= category_ids.get(i) %>">
 			        <%=C_name %>
 			    </option>				
 				<% 
 						} else {
 				%>
-			    <option value="<%= rs1.getInt("id") %>">
+			    <option value="<%= category_ids.get(i) %>">
 			        <%=C_name %>
 			    </option>
 			    <%	
 						}
+						i++;
 					}
 			    %>
 			</select>
@@ -146,6 +157,36 @@
 		        <th>SKU</th>
 		        <th>Price</th>
 		    </tr>
+		    
+		    <tr>
+                <form action="Products.jsp" method="POST">
+                    <input type="hidden" name="action" value="insert"/>
+                    <th>&nbsp;</th>
+                    <th><input value="" name="I_product_name"/></th>
+                    <th>
+                    <select name="I_Category_id">
+						<option value=0> all</option>
+						<%
+							int j = 0;
+							while(j < categories.size()){
+								String C_name = categories.get(j);
+								//System.out.println(rs1.getInt("id"));
+						%>
+					    <option value="<%= category_ids.get(j) %>">
+					        <%=C_name %>
+					    </option>
+					    <%	
+								j++;
+							}
+					    %>
+					</select>
+					</th>
+                    <th><input value="" name="I_sku"/></th>
+                    <th><input value="" name="I_price"/></th>
+                    <th><input type="submit" value="Insert"/></th>
+                </form>
+            </tr>
+		    
 		    <%-- First load code --%>
 		    <% 
 		    	// First time load
@@ -169,19 +210,43 @@
 		            </td>
 		            <%-- Get the name --%>
 		            <td>
-		                <input value="<%=rs.getString(2)%>" name="product_name" readonly/>
+		                <input value="<%=rs.getString(2)%>" name="I_product_name"/>
 		            </td>
 		            <%-- Get the category --%>
 		            <td>
-		                <input value="<%=rs.getString(6)%>" name="category_name" readonly/>
-		            </td>
+                    <select name="I_Category_id">
+						<option value=0> all</option>
+						<%
+							int k = 0;
+							while(k < categories.size()){
+								String C_name = categories.get(k);
+								//System.out.println(category_ids.get(k));
+								//System.out.println(rs.getInt(5));
+								if (category_ids.get(k) == rs.getInt(5)) {
+						%>
+					    <option selected  value="<%= rs.getString(6) %>">
+					        <%=C_name %>
+					    </option>				
+						<% 
+								} else {
+						%>
+					    <option value="<%= rs.getString(6) %>">
+					        <%=C_name %>
+					    </option>
+					    <%	
+								}
+								k++;
+							}
+					    %>
+					</select>
+					</td>
 		             <%-- Get the sku --%>
 		            <td>
-		                <input value="<%=rs.getString(3)%>" name="sku" readonly/>
+		                <input value="<%=rs.getString(3)%>" name="I_sku"/>
 		            </td>  
 		            <%-- Get the price --%>
 		            <td>
-		                <input value="<%=rs.getDouble(4)%>" name="price" readonly/>
+		                <input value="<%=rs.getDouble(4)%>" name="I_price"/>
 		            </td>
 		            <form action="Product_Order.jsp" method="POST">
 			            <input type="hidden" name="action" value="add"/>

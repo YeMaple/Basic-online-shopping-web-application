@@ -13,6 +13,8 @@
 <%-- Open connection code --%>
 <%
 	String P_name = request.getParameter("P_name");
+	String current_page = (String) session.getAttribute("current_page");
+	String dst_link = null;
     Connection conn = null;
     PreparedStatement pstmt = null;
     ResultSet rs = null;
@@ -24,7 +26,13 @@
         // Open a connection to the database using DriverManager
         conn = DriverManager.getConnection(
                 "jdbc:postgresql://localhost/shopping_db?" +
-                "user=postgres&password=postgres");        
+                "user=postgres&password=postgres");    
+        // Check which page uses this jsp file
+        if(current_page.equals("product")){
+        	dst_link = "Products.jsp";
+        }else{
+        	dst_link = "Product_Browsing.jsp";
+        }
     
 %>
 
@@ -38,13 +46,13 @@
     	<%
     		if (P_name != null) {
     	%>
-    	<a href="Product_Browsing.jsp?action=search&Category_id=0&P_name=<%=P_name%>">
+    	<a href="<%= dst_link%>?action=search&Category_id=0&P_name=<%=P_name%>">
     		All
     	</a>
     	<%
     		} else {
     	%>
-  		<a href="Product_Browsing.jsp?action=search&Category_id=0"> 
+  		<a href="<%= dst_link%>?action=search&Category_id=0"> 
   			All
   		</a>		 	
     	<%
@@ -59,13 +67,13 @@
     	<%
     		if (P_name != null) {
     	%>
-        <a href="Product_Browsing.jsp?action=search&Category_id=<%=rs.getInt("id")%>&P_name=<%=P_name%>">
+        <a href="<%= dst_link%>?action=search&Category_id=<%=rs.getInt("id")%>&P_name=<%=P_name%>">
         	<%=rs.getString("name")%>
         </a>
         <%
     		} else {
         %>
-        <a href="Product_Browsing.jsp?action=search&Category_id=<%=rs.getInt("id")%>">
+        <a href="<%= dst_link%>?action=search&Category_id=<%=rs.getInt("id")%>">
         	<%=rs.getString("name")%>
         </a>
         <%

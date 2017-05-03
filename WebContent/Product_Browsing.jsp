@@ -10,8 +10,8 @@
 <%
     String user = (String)session.getAttribute("user");
     String role = (String)session.getAttribute("role");
-    //System.out.println(role);
-    //System.out.println(user);
+	
+    session.setAttribute("current_page", "product_browsing" );
     if (user == null || role == null) {
     	response.sendRedirect("Failure.jsp?failure="+"NotLogin");
     } else {
@@ -25,7 +25,7 @@ Welcome <%=user %><p>
 		<jsp:include page="/Categories_Link.jsp"/>
 		</td>
 		<td>
-		<jsp:include page="/List_product.jsp"/>
+		<jsp:include page="/List_Product.jsp"/>
 	</tr>
 </table>
 <%
