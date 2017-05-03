@@ -12,6 +12,7 @@
 <%-- Check session user --%>
 <%
 	String user = (String) session.getAttribute("user");
+	//System.out.println("!!!!!!!!!!!!!!!!");
 	int cart_id = Integer.parseInt((String) session.getAttribute("cart"));
 	if (user == null) {
 		response.sendRedirect("Failure.jsp?failure="+"NotLogin");
@@ -37,6 +38,35 @@ Welcome <%=user %> <p>
                     "jdbc:postgresql://localhost/shopping_db?" +
                     "user=postgres&password=postgres");        
     
+%>
+<%-- Insert into cart Code --%>
+<%
+	// Check if an insertion is requested
+	if (action != null && action.equals("add")) {
+	
+	    // Begin transaction
+	    conn.setAutoCommit(false);
+	    //System.out.println("!!!!!!!!!!!!!!!!!");
+	    pstmt = conn.prepareStatement("SELECT * FROM contains c WHERE c.product_id =? AND c.cart_id=?");
+	    pstmt.setInt(1,Integer.parseInt(request.getParameter("id")));
+	    pstmt.setInt(2, cart_id);
+	    ResultSet tmp = pstmt.executeQuery();
+	    if (tmp.next()) {
+	    	response.sendRedirect("Failure.jsp?failure=" + "RepeatItem");
+	    	conn.setAutoCommit(true);
+	    } else {
+	    pstmt = conn
+	    .prepareStatement("INSERT INTO contains (added_price, quantity, product_id, cart_id) VALUES (?, 1, ?, ?)");
+	    pstmt.setDouble(1, Double.parseDouble(request.getParameter("price")));
+	    pstmt.setInt(2, Integer.parseInt(request.getParameter("id")));
+	    pstmt.setInt(3, cart_id);
+	    pstmt.executeUpdate();
+	    // Commit transaction
+	    conn.commit();
+	    conn.setAutoCommit(true);
+	    }
+
+	}
 %>
 <table>
 	<tr>
@@ -144,6 +174,8 @@ Welcome <%=user %> <p>
         }
     }
 %>
-
+<form action="Home.jsp">
+    <button>Home</button>
+</form>
 </body>
 </html>

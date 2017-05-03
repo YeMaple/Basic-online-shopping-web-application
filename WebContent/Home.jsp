@@ -84,7 +84,6 @@ Welcome <%=user %> <p>
 		<form action="Products.jsp", method="POST">
 			<input type = "hidden" name = "user" value = <%=user %>/>
 			<input type = "hidden" name = "role" value = <%=rs.getString("role") %>/>
-			<input type = "hidden" name = "Category_id" value = 0 />
 			<button>Products</button>
 		</form>
 		<%
@@ -98,6 +97,7 @@ Welcome <%=user %> <p>
 		<form action="Product_Browsing.jsp", method="POST">
 			<input type = "hidden" name = "user" value = <%=user %>/>
 			<input type = "hidden" name = "role" value = <%=rs.getString("role") %>/>
+			<input type = "hidden" name = "Category_id" value = 0 />
 			<button>Search Products</button>
 		</form>
 		<form action="Product_Order.jsp", method="POST">

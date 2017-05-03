@@ -45,6 +45,11 @@
     	The provided name <%=wrongName %> is not known<p>
     	<a href="Login.jsp">Please try again</a>
     <%
+        } else if (type != null && type.equals("RepeatItem")) {
+    %>
+    	Item already in cart!<p>
+    	<a href="Product_Order.jsp">View item in cart</a>
+    <%
         }
     %>
 </body>

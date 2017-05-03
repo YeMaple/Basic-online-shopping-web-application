@@ -12,6 +12,7 @@
 <b>Categories List</b>
 <%-- Open connection code --%>
 <%
+	String P_name = request.getParameter("P_name");
     Connection conn = null;
     PreparedStatement pstmt = null;
     ResultSet rs = null;
@@ -34,18 +35,42 @@
 %>
 <ul>
     <li>
-    	<a href="Products.jsp?action=search&Category_id=0">
+    	<%
+    		if (P_name != null) {
+    	%>
+    	<a href="Product_Browsing.jsp?action=search&Category_id=0&P_name=<%=P_name%>">
     		All
     	</a>
+    	<%
+    		} else {
+    	%>
+  		<a href="Product_Browsing.jsp?action=search&Category_id=0"> 
+  			All
+  		</a>		 	
+    	<%
+    		}
+    	%>
     </li>
     <%-- Iteration code --%>
     <%
         while (rs.next()) {
     %>
     <li>
-        <a href="Products.jsp?action=search&Category_id=<%=rs.getInt("id")%>">
+    	<%
+    		if (P_name != null) {
+    	%>
+        <a href="Product_Browsing.jsp?action=search&Category_id=<%=rs.getInt("id")%>&P_name=<%=P_name%>">
         	<%=rs.getString("name")%>
         </a>
+        <%
+    		} else {
+        %>
+        <a href="Product_Browsing.jsp?action=search&Category_id=<%=rs.getInt("id")%>">
+        	<%=rs.getString("name")%>
+        </a>
+        <%
+    		}
+        %>
     </li>
     <%
         }

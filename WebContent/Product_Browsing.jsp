@@ -7,6 +7,32 @@
 <title>Product_Browser</title>
 </head>
 <body>
-<h1>Product Browser</h1>
+<%
+    String user = (String)session.getAttribute("user");
+    String role = (String)session.getAttribute("role");
+    //System.out.println(role);
+    //System.out.println(user);
+    if (user == null || role == null) {
+    	response.sendRedirect("Failure.jsp?failure="+"NotLogin");
+    } else {
+%>
+
+<h1>Product Browsing</h1>
+Welcome <%=user %><p>
+<table>
+	<tr>
+		<td>
+		<jsp:include page="/Categories_Link.jsp"/>
+		</td>
+		<td>
+		<jsp:include page="/List_product.jsp"/>
+	</tr>
+</table>
+<%
+    }
+%>
+<form action="Home.jsp">
+    <button>Home</button>
+</form>
 </body>
 </html>

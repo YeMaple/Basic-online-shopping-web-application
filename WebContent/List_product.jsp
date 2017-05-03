@@ -10,7 +10,6 @@
 	String user = (String) session.getAttribute("user");
 	String role = (String) session.getAttribute("role");
 	String cart_id = (String)session.getAttribute("cart");
-	//System.out.println("get user!!!!!!!!!!!");
 	if(user == null){
 		//System.out.println("Redirect!!!!!!!!!!!");
 		response.sendRedirect("Failure.jsp?failure="+"NotLogin");
@@ -88,33 +87,16 @@
 		
 %>
 
-<%-- Insert into cart Code --%>
-<%
-	// Check if an insertion is requested
-	if (action != null && action.equals("add")) {
-	
-	    // Begin transaction
-	    conn.setAutoCommit(false);
-	    
-	    pstmt = conn
-	    .prepareStatement("INSERT INTO contains (added_price, quantity, product_id, cart_id) VALUES (?, 1, ?, ?)");
-	    pstmt.setDouble(1, Double.parseDouble(request.getParameter("price")));
-	    pstmt.setInt(2, Integer.parseInt(request.getParameter("id")));
-	    pstmt.setInt(3, Integer.parseInt(cart_id));
-	    pstmt.executeUpdate();
-	    // Commit transaction
-	    conn.commit();
-	    conn.setAutoCommit(true);
-	    response.sendRedirect("Product_Order.jsp");
-	}
-%>
-
 <div>
 	<div>
-		<form action="Products.jsp">
+		<form action="Product_Browsing.jsp">
 			<input type="hidden" name="action" value="search">
 			<%
-			int current_selection = Integer.parseInt(request.getParameter("Category_id"));
+			String curr = request.getParameter("Category_id");
+			int current_selection = 0;
+			if (curr != null) {
+				current_selection = Integer.parseInt(curr);
+			}
 			//System.out.println(current_selection);
 			%>
 			<select name="Category_id">
@@ -140,8 +122,18 @@
 					}
 			    %>
 			</select>
-			
-			<input type="text" name="P_name" placeholder="Search product name here" value="">
+			<%
+				String P_name = request.getParameter("P_name");
+				if (P_name != null) {
+			%>
+			<input type="text" name="P_name" placeholder="Search product name here" value="<%=P_name%>">
+			<%
+				} else {
+			%>
+			<input type="text" name="P_name" placeholder="Search product name here" value="">				
+			<%
+				}
+			%>
 			<input type="submit" value="Search">
 		</form>
 	</div>
@@ -191,7 +183,7 @@
 		            <td>
 		                <input value="<%=rs.getDouble(4)%>" name="price" readonly/>
 		            </td>
-		            <form action="Products.jsp" method="POST">
+		            <form action="Product_Order.jsp" method="POST">
 			            <input type="hidden" name="action" value="add"/>
 			            <input type="hidden" value="<%=rs.getInt(1)%>" name="id"/>
 			            <input type="hidden" value="<%=rs.getDouble(4)%>" name="price"/>
