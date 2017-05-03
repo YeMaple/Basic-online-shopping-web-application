@@ -12,13 +12,12 @@
 	String role = (String) session.getAttribute("role");
 	String cart_id = (String)session.getAttribute("cart");
 	if(user == null){
-		//System.out.println("Redirect!!!!!!!!!!!");
 		response.sendRedirect("Failure.jsp?failure="+"NotLogin");
 	}else{
 %>
 
 <%-- Import the java.sql package --%>
-<%@ page import="java.sql.*, java.util.*"%>
+<%@ page import="java.sql.*, java.util.*, java.lang.*"%>
 <%-- Open connection code --%>
 <%
 		Connection conn = null;
@@ -96,6 +95,63 @@
 		
 %>
 
+<%-- Insertion code --%>
+<%
+	if (action != null && action.equals("insert")) {
+		// Begin transaction
+		conn.setAutoCommit(false);
+	
+		// Create prepared statement and use for insertion
+		pstmt = conn.prepareStatement("INSERT INTO product (name, sku, price, category_id) VALUES (?, ?, ?, ?)");
+		pstmt.setString(1, request.getParameter("I_product_name"));
+		pstmt.setString(2, request.getParameter("I_sku"));
+		pstmt.setDouble(3, Double.parseDouble(request.getParameter("I_price")));
+		pstmt.setInt(4, Integer.parseInt(request.getParameter("I_Category_id")));
+		int rowCount = pstmt.executeUpdate();
+	
+		// Commit 
+		conn.commit();
+		conn.setAutoCommit(true);
+	}
+%>
+
+<%-- Update code --%>
+<%
+	if (action != null && action.equals("update")) {
+		// Begin transaction
+		conn.setAutoCommit(false);
+		// Create prepared statement and use for update
+		pstmt = conn.prepareStatement("UPDATE product SET name = ?, sku = ?, price = ?, category_id = ? WHERE id = ?");
+		pstmt.setString(1, request.getParameter("I_product_name"));
+		pstmt.setString(2, request.getParameter("I_sku"));
+		pstmt.setDouble(3, Double.parseDouble(request.getParameter("I_price")));
+		pstmt.setInt(4, Integer.parseInt(request.getParameter("I_Category_id")));
+		pstmt.setInt(5, Integer.parseInt(request.getParameter("u_id")));
+		int rowCount = pstmt.executeUpdate();
+		
+		// Commit
+		conn.commit();
+		conn.setAutoCommit(true);
+	}
+%>
+
+<%-- Delete code --%>
+<%
+	if (action != null && action.equals("delete")) {
+		// Begin transaction
+		conn.setAutoCommit(false);
+		
+		// Create prepared statement and use for delete
+		pstmt = conn.prepareStatement("DELETE FROM product WHERE id = ?");
+		pstmt.setInt(1, Integer.parseInt(request.getParameter("d_id")));
+		int rowCount = pstmt.executeUpdate();
+		
+		// Commit
+		conn.commit();
+		conn.setAutoCommit(true);
+	}
+%>
+
 <div>
 	<div>
 		<form action="Products.jsp">
@@ -165,7 +221,6 @@
                     <th><input value="" name="I_product_name"/></th>
                     <th>
                     <select name="I_Category_id">
-						<option value=0> all</option>
 						<%
 							int j = 0;
 							while(j < categories.size()){
@@ -204,6 +259,9 @@
 		        	count++;
 		    %>
 		    <tr>
+		        <form action="Products.jsp" method="POST">
+		            <input type="hidden" name="action" value="update"/>
+		            <input type="hidden" name="u_id" value="<%=rs.getInt(1)%>"/>
 		            <%-- Get the id --%>
 		            <td>
 		                 <%=rs.getInt(1)%>
@@ -215,7 +273,6 @@
 		            <%-- Get the category --%>
 		            <td>
                     <select name="I_Category_id">
-						<option value=0> all</option>
 						<%
 							int k = 0;
 							while(k < categories.size()){
@@ -224,13 +281,13 @@
 								//System.out.println(rs.getInt(5));
 								if (category_ids.get(k) == rs.getInt(5)) {
 						%>
-					    <option selected  value="<%= rs.getString(6) %>">
+					    <option selected  value="<%= rs.getString(5) %>">
 					        <%=C_name %>
 					    </option>				
 						<% 
 								} else {
 						%>
-					    <option value="<%= rs.getString(6) %>">
+					    <option value="<%= category_ids.get(k) %>">
 					        <%=C_name %>
 					    </option>
 					    <%	
@@ -247,14 +304,15 @@
 		            <%-- Get the price --%>
 		            <td>
 		                <input value="<%=rs.getDouble(4)%>" name="I_price"/>
-		            </td>
-		            <form action="Product_Order.jsp" method="POST">
-			            <input type="hidden" name="action" value="add"/>
-			            <input type="hidden" value="<%=rs.getInt(1)%>" name="id"/>
-			            <input type="hidden" value="<%=rs.getDouble(4)%>" name="price"/>
-			            <%-- Button --%>
-			            <td><input type="submit" value="Add to cart"/></td>
-			        </form>
+		            </td>    
+		            <td><input type="submit" value="Update"></td>
+		        </form>
+		        <form action="Products.jsp" method="POST">
+		            <input type="hidden" name="action" value="delete"/>
+		            <input type="hidden" value="<%=rs.getInt(1)%>" name="d_id"/>
+		            <%-- Button --%>
+		            <td><input type="submit" value="Delete"/></td>
+		        </form>  
 		    </tr>
 		    <%
 		        	}
