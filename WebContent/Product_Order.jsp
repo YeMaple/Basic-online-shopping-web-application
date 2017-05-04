@@ -22,7 +22,7 @@
 Welcome <%=user %> <p>
 
 <%-- Import the java.sql package --%>
-<%@ page import="java.sql.*, java.io.PrintWriter"%>
+<%@ page import="java.sql.*"%>
 
 <%-- Open connection code --%>
 <%
@@ -138,6 +138,11 @@ Welcome <%=user %> <p>
 	<%
 		}
 	%>
+	<tr>
+			<form action="Buy_Shopping_Cart.jsp">
+			    <button>Checkout</button>
+			</form>
+	</tr>
 </table>
 <%-- Close connection code --%>
 <%

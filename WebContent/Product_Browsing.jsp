@@ -26,6 +26,7 @@ Welcome <%=user %><p>
 		</td>
 		<td>
 		<jsp:include page="/List_Product.jsp"/>
+		</td>
 	</tr>
 </table>
 <%

@@ -7,6 +7,26 @@
 <title>Checkout</title>
 </head>
 <body>
+<%
+    String user = (String)session.getAttribute("user");
+    String role = (String)session.getAttribute("role");
+	
+    if (user == null || role == null) {
+    	response.sendRedirect("Failure.jsp?failure="+"NotLogin");
+    } else {
+%>
+
 <h1>Checkout</h1>
+Welcome <%=user %><p>
+<table>
+	<tr>
+		<td>
+		<jsp:include page="/Shopping_Summary.jsp"/>
+		</td>
+	</tr>
+</table>
+<%
+    }
+%>
 </body>
 </html>
