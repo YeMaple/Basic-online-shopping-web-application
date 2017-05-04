@@ -12,6 +12,8 @@
 <%
     String user = (String)session.getAttribute("user");
     String role = (String)session.getAttribute("role");
+    
+    session.setAttribute("current_page", "category" );
     //System.out.println(role);
     //System.out.println(user);
     if (user == null || role == null) {

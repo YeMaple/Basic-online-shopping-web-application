@@ -51,7 +51,7 @@
 		rs1 = pstmt.executeQuery();
 %>
 
-<%-- Insert into cart Code --%>
+<%-- Insert into purchaseorder Code --%>
 <%
 	// Check if an insertion is requested
 	if (action != null && action.equals("purchase")) {
