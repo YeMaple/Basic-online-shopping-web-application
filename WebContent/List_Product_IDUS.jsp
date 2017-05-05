@@ -17,7 +17,9 @@
 %>
 
 <%-- Import the java.sql package --%>
+<%@ page import="javax.sql.*, javax.naming.*" %>
 <%@ page import="java.sql.*, java.util.*, java.lang.*"%>
+
 <%-- Open connection code --%>
 <%
 		Connection conn = null;
@@ -26,8 +28,9 @@
 		ResultSet rs = null;
 		ArrayList<String> categories = new ArrayList();
 		ArrayList<Integer> category_ids = new ArrayList();
-
+		String action = request.getParameter("action");
 		try {
+			/*
 	    	// Registering Postgresql JDBC driver with the DriverManager
 	    	Class.forName("org.postgresql.Driver");
 	
@@ -35,6 +38,13 @@
 	    	conn = DriverManager.getConnection(
 	        	"jdbc:postgresql://localhost/shopping_db?" +
 	        	"user=postgres&password=postgres");
+	    	*/
+			// Obtain the environment naming context
+	        Context initCtx = new InitialContext();
+	        // Look up the data source
+	        DataSource ds = (DataSource) initCtx.lookup("java:comp/env/jdbc/ShoppingDBPool");
+	        // Allocate and use a connection from the pool
+	        conn = ds.getConnection();
 %>
 
 <%-- Get categories list code --%>
@@ -54,7 +64,6 @@
 
 <%-- -------- SELECT product info Code -------- --%>
 <%
-		String action = request.getParameter("action");
 		// Check if an insertion is requested
 		if (action != null && action.equals("search")) {
 			// get the input
@@ -330,6 +339,7 @@
 		    	<td>None</td>
 		    	<td>None</td>
 		    	<td>None</td>
+		    	<td>None</td>
 		    </tr>
 		    <%
 		    	}
@@ -348,11 +358,34 @@
 		statement.close();
 		// Close the Connection
 		conn.close();
+        	if (action != null && action.equals("insert")) {
+            	//session.setAttribute("success", "InsertProduct");
+            	response.sendRedirect("Products.jsp?success="+"InsertProduct");
+        	} else if (action != null && action.equals("update")) {
+            	//session.setAttribute("success", "UpdateProduct");
+            	response.sendRedirect("Products.jsp?success"+"UpdateProduct");
+        	} else if (action != null && action.equals("delete")) {
+            	//session.setAttribute("success", "DeleteProduct");
+            	response.sendRedirect("Products.jsp?success="+"DeleteProduct");
+        	}
 		} catch (SQLException e) {
 			// Wrap the SQL exception in a runtime exception to propagate
 			// it upwards
-			throw new RuntimeException(e);
+			//throw new RuntimeException(e)
+            if (action != null && action.equals("insert")) {
+                //session.setAttribute("failure", "InsertProduct");
+                response.sendRedirect("Products.jsp?failure="+"InsertProduct");
+            } else if (action != null && action.equals("update")) {
+                //session.setAttribute("failure", "UpdateProduct");
+                response.sendRedirect("Products.jsp?failure"+"UpdateProduct");
+            } else if (action != null && action.equals("delete")) {
+                //session.setAttribute("failure", "DeleteProduct");
+                response.sendRedirect("Products.jsp?failure="+"DeleteProduct");
+            }
+	
 		}
+		
+		
 		finally {
 		// Release resources in a finally block in reverse-order of
 		// their creation
@@ -381,7 +414,7 @@
 				conn = null;
 			}
 		}
-	}
+		}
 %>
 </body>
 </html>

@@ -7,7 +7,7 @@
 </head>
 <body>
 <%-- Import the java.sql package --%>
-<%@ page import="java.sql.*, java.io.PrintWriter"%>
+<%@ page import="java.sql.*, javax.sql.*, javax.naming.*"%>
 
 <b>Categories List</b>
 <%-- Open connection code --%>
@@ -20,13 +20,21 @@
     ResultSet rs = null;
 
     try {
+		// Obtain the environment naming context
+        Context initCtx = new InitialContext();
+        // Look up the data source
+        DataSource ds = (DataSource) initCtx.lookup("java:comp/env/jdbc/ShoppingDBPool");
+        // Allocate and use a connection from the pool
+        conn = ds.getConnection();
+    	/*
         // Registering Postgresql JDBC driver with the DriverManager
         Class.forName("org.postgresql.Driver");
     
         // Open a connection to the database using DriverManager
         conn = DriverManager.getConnection(
                 "jdbc:postgresql://localhost/shopping_db?" +
-                "user=postgres&password=postgres");    
+                "user=postgres&password=postgres");  
+        */
         // Check which page uses this jsp file
         if(current_page.equals("product")){
         	dst_link = "Products.jsp";
@@ -92,7 +100,10 @@
     } catch (SQLException e) {
         // Wrap the SQL exception in a runtime exception to propagate
         // it upwards
-        throw new RuntimeException(e);       
+        //throw new RuntimeException(e);     
+    	response.sendRedirect("Failure.jsp?failure="+"Other");
+    } catch (Exception e) {
+    	response.sendRedirect("Failure.jsp?failure="+"Other");
     }
     finally {
     // Release resources in a finally block in reverse-order of

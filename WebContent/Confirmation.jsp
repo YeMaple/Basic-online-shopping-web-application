@@ -9,7 +9,7 @@
 <body>
 <h1>Confirmation</h1>
 <%-- Import the java.sql package --%>
-<%@ page import="java.sql.*"%>
+<%@ page import="java.sql.*, javax.sql.*, javax.naming.*"%>
 <%-- Open connection code --%>
 <%
 	Connection conn = null;
@@ -22,6 +22,7 @@
 	String action = request.getParameter("action");
 
 	try {
+		/*
 	    // Registering Postgresql JDBC driver with the DriverManager
 	    Class.forName("org.postgresql.Driver");
 	
@@ -29,6 +30,13 @@
 	    conn = DriverManager.getConnection(
 	        	"jdbc:postgresql://localhost/shopping_db?" +
 	        	"user=postgres&password=postgres");
+	    */
+		// Obtain the environment naming context
+        Context initCtx = new InitialContext();
+        // Look up the data source
+        DataSource ds = (DataSource) initCtx.lookup("java:comp/env/jdbc/ShoppingDBPool");
+        // Allocate and use a connection from the pool
+        conn = ds.getConnection();
 %>
 <%-- Insert into purchaseorder Code --%>
 <%
@@ -152,7 +160,10 @@ Purchase succeeded!
 		} catch (SQLException e) {
 			// Wrap the SQL exception in a runtime exception to propagate
 			// it upwards
-			throw new RuntimeException(e);
+			//throw new RuntimeException(e);
+			response.sendRedirect("Failure.jsp?failure="+"Other");
+		} catch (Exception e) {
+			response.sendRedirect("Failure.jsp?failure="+"Other");
 		}
 		finally {
 		// Release resources in a finally block in reverse-order of

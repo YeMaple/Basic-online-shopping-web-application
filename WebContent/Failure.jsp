@@ -24,21 +24,6 @@
     	This page is available to owners only<p>
         <a href="Home.jsp">Return to HomePage</a>
     <%
-        } else if (type != null && type.equals("InsertCategory")) {
-    %>
-        Insert Category Failure<p>
-        <a href="Categories.jsp">Please try again</a>
-    <%
-        } else if (type != null && type.equals("UpdateCategory")) {
-    %>
-        Update Category Failure<p>
-        <a href="Categories.jsp">Please try again</a>
-    <%
-        } else if (type != null && type.equals("DeleteCategory")) {
-    %> 
-        Delete Category Failure<p>
-        <a href="Categories.jsp">Please try again</a>
-    <%
         } else if (type != null && type.equals("InvalidUser")) {
         	String wrongName = request.getParameter("WrongName");
     %>
@@ -50,7 +35,13 @@
     	Item already in cart!<p>
     	<a href="Product_Order.jsp">View item in cart</a>
     <%
+        } else if (type != null && type.equals("Other")) {
+    %>
+    	Uh-oh, something went wrong<p>
+    	<a href="Home.jsp">Return to HomePage</a>
+    <%
         }
     %>
+
 </body>
 </html>

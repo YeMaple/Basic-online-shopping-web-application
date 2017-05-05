@@ -44,9 +44,27 @@
 </div>
 
 <h1>Categories</h1>
+<%-- Display failure message --%>
+<%
+	String failure = request.getParameter("failure");
+	String success = request.getParameter("success");
+	if (failure != null && failure.equals("InsertCategory")) {
+%>
+	Data insertion failure<p>
+<%
+	} else if (failure != null && failure.equals("UpdateCategory")) {
+%>
+	Data modification failure<p>
+<%
+	} else if (failure != null && failure.equals("DeleteCategory")) {
+%>
+	Data deletion failure<p>
+<%
+	}
+%>
 
 <%-- Import the java.sql package --%>
-<%@ page import="java.sql.*, java.io.PrintWriter"%>
+<%@ page import="java.sql.*, javax.sql.*, javax.naming.*"%>
 
 
 <%-- Open connection code --%>
@@ -57,13 +75,21 @@
         ResultSet temp = null;
         String action = request.getParameter("action");
         try {
+        	/*
             // Registering Postgresql JDBC driver with the DriverManager
             Class.forName("org.postgresql.Driver");
     
             // Open a connection to the database using DriverManager
             conn = DriverManager.getConnection(
                     "jdbc:postgresql://localhost/shopping_db?" +
-                    "user=postgres&password=postgres");        
+                    "user=postgres&password=postgres");   
+            */
+    		// Obtain the environment naming context
+            Context initCtx = new InitialContext();
+            // Look up the data source
+            DataSource ds = (DataSource) initCtx.lookup("java:comp/env/jdbc/ShoppingDBPool");
+            // Allocate and use a connection from the pool
+            conn = ds.getConnection();
     
 %>
 <table>
@@ -145,8 +171,8 @@
         <form action="Categories.jsp" method="POST">
             <input type="hidden" name="action" value="insert"/>
             <th>&nbsp;</th>
-            <th><input value="" name="name"/></th>
-            <th><input value="" name="description"/></th>
+            <th><input value="" name="name" required/></th>
+            <th><input value="" name="description" required/></th>
             <th><input type="submit" value="Insert"/></th>
         </form>
     </tr>
@@ -164,11 +190,11 @@
             </td>
             <%-- Get the name --%>
             <td>
-                <input value="<%=rs.getString("name")%>" name="name"/>
+                <input value="<%=rs.getString("name")%>" name="name" required/>
             </td>
              <%-- Get the description --%>
             <td>
-                <input value="<%=rs.getString("description")%>" name="description"/>
+                <input value="<%=rs.getString("description")%>" name="description" required/>
             </td>    
             <td><input type="submit" value="Update"></td>
         </form>   
@@ -201,28 +227,20 @@
             //rs.close();
             //temp.close();
             conn.close();
-            
-            if (action != null && action.equals("insert")) {
-            	response.sendRedirect("Success.jsp?success="+"InsertCategory");
-            } else if (action != null && action.equals("update")) {
-            	response.sendRedirect("Success.jsp?success="+"UpdateCategory");
-            } else if (action != null && action.equals("delete")) {
-            	response.sendRedirect("Success.jsp?success="+"DeleteCategory");
-            }
-    
+              
         } catch (SQLException e) {
             // Wrap the SQL exception in a runtime exception to propagate
             // it upwards
             //throw new RuntimeException(e);  
             if (action != null && action.equals("insert")) {
                 //ession.setAttribute("failure", "InsertCategory");
-                response.sendRedirect("Failure.jsp?failure="+"InsertCategory");
+                response.sendRedirect("Categories.jsp?failure="+"InsertCategory");
             } else if (action != null && action.equals("update")) {
                 //session.setAttribute("failure", "UpdateCategory");
-                response.sendRedirect("Failure.jsp?failure"+"UpdateCategory");
+                response.sendRedirect("Categories.jsp?failure"+"UpdateCategory");
             } else if (action != null && action.equals("delete")) {
                 //session.setAttribute("failure", "DeleteCategory");
-                response.sendRedirect("Failure.jsp?failure="+"DeleteCategory");
+                response.sendRedirect("Categories.jsp?failure="+"DeleteCategory");
             }
         }
         finally {

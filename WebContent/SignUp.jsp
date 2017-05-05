@@ -78,7 +78,7 @@
 <form action="SignUp.jsp", method="POST">
 <input type="hidden" name="action" value="insert"/>
 User name:<br>
-<input type="text" name="usr_name" value="">
+<input type="text" name="usr_name" value="" required>
 <br>
 Role:<br>
 <select name="role">
@@ -87,7 +87,7 @@ Role:<br>
 </select>
 <br>
 Age:<br>
-<input type="number" name="age" min="1" max="150">
+<input type="number" name="age" min="1" max="150" required>
 <br>
 State:<br>
 <select name="state">
@@ -110,8 +110,10 @@ State:<br>
 	} catch (SQLException e) {
 	// Wrap the SQL exception in a runtime exception to propagate it upwards
 	//session.setAttribute("failure", "SignUp");
-	//response.sendRedirect("Failure.jsp?failure="+"SignUp");
-	throw new RuntimeException(e);
+	response.sendRedirect("Failure.jsp?failure="+"SignUp");
+	//throw new RuntimeException(e);
+	} catch (Exception e) {
+		response.sendRedirect("Failure.jsp?failure="+"Other");
 	}
 
 %>

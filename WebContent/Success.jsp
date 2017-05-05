@@ -14,22 +14,8 @@
         SignUp Success<p>
         <a href="Login.jsp">Please login </a>
     <%
-        } else if (type != null && type.equals("InsertCategory")) {
+        }
     %>
-        Category Insertion Success<p> 
-        <a href="Categories.jsp">Return </a>   
-    <%
-        } else if (type != null && type.equals("UpdateCategory")) {
-    %>
-    	Category Update Success<p>
-    	<a href="Categories.jsp">Return </a>
-    <%
-    	} else if (type != null && type.equals("DeleteCategory")) {
-    %>
-    	Category Deletion Success<p>
-    	<a href="Categories.jsp">Return </a>
-    <%
-    	}
-    %>
+
 </body>
 </html>

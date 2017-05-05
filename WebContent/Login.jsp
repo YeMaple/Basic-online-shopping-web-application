@@ -15,7 +15,7 @@ if (sessionUser != null) {
 %>
 Please login with your user information<p>
 <form method="POST" action="Home.jsp">
-	Your name:<input type="text" size="20" name="user"/><p>
+	Your name:<input type="text" size="20" name="user" required/><p>
     <input type="submit" value="Login"/>
 </form>
 <form action="SignUp.jsp">
