@@ -149,10 +149,6 @@ Purchase succeeded!
 		// Close the Connection
 		conn.close();
 		
-		if (action != null && action.equals("purchase")) {
-			System.out.println("HERE");
-			response.sendRedirect("Confirmation.jsp");
-		}
 		} catch (SQLException e) {
 			// Wrap the SQL exception in a runtime exception to propagate
 			// it upwards

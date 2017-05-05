@@ -10,6 +10,7 @@
 <%
     String user = (String)session.getAttribute("user");
     String role = (String)session.getAttribute("role");
+    int count = (int)session.getAttribute("cart_count");
 	
     session.setAttribute("current_page", "product_browsing" );
     if (user == null || role == null) {
@@ -24,6 +25,7 @@
 	Connection conn = null;
 	PreparedStatement pstmt = null;
 	ResultSet rs = null;
+	ResultSet cartId = null;
 
 	try {
 	    // Registering Postgresql JDBC driver with the DriverManager
@@ -58,22 +60,50 @@
 		pstmt.setString(1, "unpaid");
 		pstmt.setInt(2, AppUserID);
 	    pstmt.executeUpdate();
+	    
+	    // Get the new cart id
+	    pstmt = conn.prepareStatement("SELECT id FROM shoppingcart WHERE status = ? AND owner = ?");
+		pstmt.setString(1, "unpaid");
+		pstmt.setInt(2, AppUserID);
+	    cartId = pstmt.executeQuery();
+	    
+	    if(cartId.next()){
+	    	session.setAttribute("cart", cartId.getString(1));
+	    }
+	    
+	    session.setAttribute("cart_count", 0);
 	
 		// Commit 
 		conn.commit();
 		conn.setAutoCommit(true);
 	}
 %>
-
+<div>
+	<div style = "position:absolute;top:0;left:0;" >
+		Welcome <%=user %>
+	</div>
+<%
+	if(count != 0){
+%>
+	<div style = "position:absolute;left:20%" >
+		<form action="Buy_Shopping_Cart.jsp", method="POST">
+			<input type = "hidden" name = "user" value = <%=user %>/>
+			<input type = "hidden" name = "role" value = <%=role %>/>
+			<button>Checkout</button>
+		</form>
+	</div>
+<%
+	}
+%>
+</div>
 <h1>Product Browsing</h1>
-Welcome <%=user %><p>
 <table>
 	<tr>
 		<td>
 		<jsp:include page="/Categories_Link.jsp"/>
 		</td>
 		<td>
-		<jsp:include page="/List_product.jsp"/>
+		<jsp:include page="/List_Product.jsp"/>
 		</td>
 	</tr>
 </table>
@@ -113,8 +143,14 @@ Welcome <%=user %><p>
 		}
 	}
 %>
+<%
+	if(role.equals("owner")){
+%>
 <form action="Home.jsp">
     <button>Home</button>
 </form>
+<%
+	}
+%>
 </body>
 </html>

@@ -7,11 +7,12 @@
 <title>Shopping_cart</title>
 </head>
 <body>
-<h1>Shopping Cart</h1>
 
 <%-- Check session user --%>
 <%
 	String user = (String) session.getAttribute("user");
+	String role = (String)session.getAttribute("role");
+	int count = (int) session.getAttribute("cart_count");
 	//System.out.println("!!!!!!!!!!!!!!!!");
 	int cart_id = Integer.parseInt((String) session.getAttribute("cart"));
 	if (user == null) {
@@ -20,7 +21,7 @@
 		String action = request.getParameter("action");
 %>
 Welcome <%=user %> <p>
-
+<h1>Shopping Cart</h1>
 <%-- Import the java.sql package --%>
 <%@ page import="java.sql.*"%>
 
@@ -46,7 +47,7 @@ Welcome <%=user %> <p>
 	
 	    // Begin transaction
 	    conn.setAutoCommit(false);
-	    //System.out.println("!!!!!!!!!!!!!!!!!");
+
 	    pstmt = conn.prepareStatement("SELECT * FROM contains c WHERE c.product_id =? AND c.cart_id=?");
 	    pstmt.setInt(1,Integer.parseInt(request.getParameter("id")));
 	    pstmt.setInt(2, cart_id);
@@ -61,6 +62,10 @@ Welcome <%=user %> <p>
 	    pstmt.setInt(2, Integer.parseInt(request.getParameter("id")));
 	    pstmt.setInt(3, cart_id);
 	    pstmt.executeUpdate();
+	    
+	 	// Update shopping cart count
+	 	count++;
+	 	session.setAttribute("cart_count", count);
 	    // Commit transaction
 	    conn.commit();
 	    conn.setAutoCommit(true);
@@ -90,6 +95,10 @@ Welcome <%=user %> <p>
             %>
             <%-- Select code --%>
             <%
+            	// Delete the none existed products from the cart
+            	pstmt = conn.prepareStatement("DELETE FROM contains c USING product p WHERE c.product_id = p.id AND p.status = 'deleted' ");
+            	pstmt.executeUpdate();
+            	// Load the products in the cart
             	pstmt = 
             	conn.prepareStatement(
             	"SELECT p.id, p.name, p.sku, c.added_price, c.quantity " +
@@ -139,7 +148,7 @@ Welcome <%=user %> <p>
 		}
 	%>
 	<tr>
-			<form action="Buy_Shopping_cart.jsp">
+			<form action="Buy_Shopping_Cart.jsp">
 			    <button>Checkout</button>
 			</form>
 	</tr>
@@ -179,8 +188,14 @@ Welcome <%=user %> <p>
         }
     }
 %>
+<%
+	if(role.equals("owner")){
+%>
 <form action="Home.jsp">
     <button>Home</button>
 </form>
+<%
+	}
+%>
 </body>
 </html>

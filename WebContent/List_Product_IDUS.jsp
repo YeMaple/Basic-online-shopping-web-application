@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>List Products</title>
 </head>
 <body>
 <% 
@@ -65,7 +65,7 @@
 				C_id = null;
 			}
 			// set possible sql string
-			String sql_request = "SELECT p.*, c.name FROM product p, category c WHERE p.category_id = c.id";
+			String sql_request = "SELECT p.*, c.name FROM product p, category c WHERE p.category_id = c.id AND p.status = 'existent'";
 			String sql_and = " AND ";
 			String sql_p_name = "lower(p.name) like '%";
 			String sql_c_id = "p.category_id = ";
@@ -91,6 +91,7 @@
 			pstmt = conn.prepareStatement(sql_request);
 		    
 		    rs = pstmt.executeQuery();
+		    
 		}
 		
 %>
@@ -102,11 +103,12 @@
 		conn.setAutoCommit(false);
 	
 		// Create prepared statement and use for insertion
-		pstmt = conn.prepareStatement("INSERT INTO product (name, sku, price, category_id) VALUES (?, ?, ?, ?)");
+		pstmt = conn.prepareStatement("INSERT INTO product (name, sku, price, category_id, status) VALUES (?, ?, ?, ?, ?)");
 		pstmt.setString(1, request.getParameter("I_product_name"));
 		pstmt.setString(2, request.getParameter("I_sku"));
 		pstmt.setDouble(3, Double.parseDouble(request.getParameter("I_price")));
 		pstmt.setInt(4, Integer.parseInt(request.getParameter("I_Category_id")));
+		pstmt.setString(5, "existent");
 		int rowCount = pstmt.executeUpdate();
 	
 		// Commit 
@@ -142,7 +144,8 @@
 		conn.setAutoCommit(false);
 		
 		// Create prepared statement and use for delete
-		pstmt = conn.prepareStatement("DELETE FROM product WHERE id = ?");
+		// Do soft delete here
+		pstmt = conn.prepareStatement("UPDATE product SET status = 'deleted' WHERE id = ?");
 		pstmt.setInt(1, Integer.parseInt(request.getParameter("d_id")));
 		int rowCount = pstmt.executeUpdate();
 		
@@ -248,7 +251,7 @@
 		    	if(rs == null){
 		    		// Use the created statement to SELECT
 		    		// all product attributes FROM the product table.
-		    		rs = statement.executeQuery("SELECT p.*, c.name FROM product p, category c WHERE p.category_id = c.id");
+		    		rs = statement.executeQuery("SELECT p.*, c.name FROM product p, category c WHERE p.category_id = c.id AND p.status = 'existent'");
 		    	}
 		    	int count = 0;
 		    %>

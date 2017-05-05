@@ -7,11 +7,11 @@
 <title>Categories</title>
 </head>
 <body>
-<h1>Categories</h1>
 <%-- Check session user --%>
 <%
     String user = (String)session.getAttribute("user");
     String role = (String)session.getAttribute("role");
+    int count = (int)session.getAttribute("cart_count");
     
     session.setAttribute("current_page", "category" );
     //System.out.println(role);
@@ -24,7 +24,26 @@
     } else {
 %>
 
-Welcome <%=user %> <p>
+<div>
+	<div style = "position:absolute;top:0;left:0;" >
+		Welcome <%=user %>
+	</div>
+<%
+	if(count != 0){
+%>
+	<div style = "position:absolute;left:20%" >
+		<form action="Buy_Shopping_Cart.jsp", method="POST">
+			<input type = "hidden" name = "user" value = <%=user %>/>
+			<input type = "hidden" name = "role" value = <%=role %>/>
+			<button>Checkout</button>
+		</form>
+	</div>
+<%
+	}
+%>
+</div>
+
+<h1>Categories</h1>
 
 <%-- Import the java.sql package --%>
 <%@ page import="java.sql.*, java.io.PrintWriter"%>

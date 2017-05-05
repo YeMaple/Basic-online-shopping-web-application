@@ -57,7 +57,7 @@
 				C_id = null;
 			}
 			// set possible sql string
-			String sql_request = "SELECT p.*, c.name FROM product p, category c WHERE p.category_id = c.id";
+			String sql_request = "SELECT p.*, c.name FROM product p, category c WHERE p.category_id = c.id AND p.status = 'existent'";
 			String sql_and = " AND ";
 			String sql_p_name = "lower(p.name) like '%";
 			String sql_c_id = "p.category_id = ";
@@ -106,7 +106,6 @@
 						String C_name = rs1.getString("name");
 						//System.out.println(rs1.getInt("id"));
 						if (((int)rs1.getInt("id")) == current_selection) {
-							//System.out.println("!!!!!!!!!");
 				%>
 			    <option selected  value="<%= rs1.getInt("id") %>">
 			        <%=C_name %>
@@ -152,7 +151,7 @@
 		    	if(rs == null){
 		    		// Use the created statement to SELECT
 		    		// all product attributes FROM the product table.
-		    		rs = statement.executeQuery("SELECT p.*, c.name FROM product p, category c WHERE p.category_id = c.id");
+		    		rs = statement.executeQuery("SELECT p.*, c.name FROM product p, category c WHERE p.category_id = c.id AND p.status = 'existent'");
 		    	}
 		    	int count = 0;
 		    %>
@@ -173,7 +172,7 @@
 		            </td>
 		            <%-- Get the category --%>
 		            <td>
-		                <input value="<%=rs.getString(6)%>" name="category_name" readonly/>
+		                <input value="<%=rs.getString(7)%>" name="category_name" readonly/>
 		            </td>
 		             <%-- Get the sku --%>
 		            <td>

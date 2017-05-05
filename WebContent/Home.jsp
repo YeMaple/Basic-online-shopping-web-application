@@ -10,7 +10,6 @@
 <%
 	String sessionUser = (String) session.getAttribute("user");
 	String user = request.getParameter("user");
-	//System.out.println("get user!!!!!!!!!!!");
 	if(user == null && sessionUser == null){
 		//System.out.println("Redirect!!!!!!!!!!!");
 		response.sendRedirect("Failure.jsp?failure="+"NotLogin");
@@ -27,9 +26,8 @@
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		PreparedStatement cartst = null;
-		ResultSet cartrs = null;
-		//System.out.println("Open connection!!!!!!!!!!!");
+		ResultSet num = null;
+
 
 		try {
 	    	// Registering Postgresql JDBC driver with the DriverManager
@@ -44,9 +42,6 @@
 
 <%-- -------- SELECT User Info Code -------- --%>
 <%
-		//System.out.println("Selection!!!!!!!!!!!");
-		// Create the statement
-		//Statement statement = conn.createStatement();
 	
 		// Use the prepare statement to SELECT
 		// the user attributes FROM the appuser table.
@@ -57,25 +52,50 @@
 		
 		rs = pstmt.executeQuery();
 %>
-		<%
+<%
 		if(rs.next()){
 			// Set session parameter
 			session.setAttribute("user", rs.getString(3));
 			session.setAttribute("role", rs.getString(1));
 			session.setAttribute("cart", rs.getString(2));
-		%>
+			// Check if cart has product
+			pstmt = conn.prepareStatement("SELECT COUNT(c.product_id) AS cnt FROM contains c WHERE c.cart_id =?");
+			pstmt.setInt(1, Integer.parseInt(rs.getString(2)));
+			num = pstmt.executeQuery();
+			int count = 0;
+			if (num.next()){
+				count = num.getInt("cnt");
+			}
+			session.setAttribute("cart_count", count);
+%>
 
-Welcome <%=user %> <p>
+<div>
+	<div style = "position:absolute;top:0;left:0;" >
+		Welcome <%=user %>
+	</div>
+<%
+	if(count != 0){
+%>
+	<div style = "position:absolute;left:20%" >
+		<form action="Buy_Shopping_Cart.jsp", method="POST">
+			<input type = "hidden" name = "user" value = <%=user %>/>
+			<input type = "hidden" name = "role" value = <%=rs.getString("role") %>/>
+			<button>Checkout</button>
+		</form>
+	</div>
+<%
+	}
+%>
+</div>
 <div>
 	<div>
-	<h2>Page Index</h2>
+	<h1>Page Index</h1>
 	</div>
 	<div>
-
-		<%
+<%
 			// if the user's role is owner
 			if(rs.getString("role").equals("owner")){
-		%>
+%>
 		<form action="Categories.jsp", method="POST">
 			<input type = "hidden" name = "user" value = <%=user %>/>
 			<input type = "hidden" name = "role" value = <%=rs.getString("role") %>/>
@@ -89,11 +109,6 @@ Welcome <%=user %> <p>
 		<%
 			}
 		%>
-		<form action="Buy_Shopping_cart.jsp", method="POST">
-			<input type = "hidden" name = "user" value = <%=user %>/>
-			<input type = "hidden" name = "role" value = <%=rs.getString("role") %>/>
-			<button>Checkout</button>
-		</form>
 		<form action="Product_Browsing.jsp", method="POST">
 			<input type = "hidden" name = "user" value = <%=user %>/>
 			<input type = "hidden" name = "role" value = <%=rs.getString("role") %>/>
