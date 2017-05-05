@@ -139,7 +139,7 @@ Welcome <%=user %> <p>
 		}
 	%>
 	<tr>
-			<form action="Buy_Shopping_Cart.jsp">
+			<form action="Buy_Shopping_cart.jsp">
 			    <button>Checkout</button>
 			</form>
 	</tr>

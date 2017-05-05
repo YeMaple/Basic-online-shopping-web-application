@@ -30,6 +30,30 @@
 	        	"jdbc:postgresql://localhost/shopping_db?" +
 	        	"user=postgres&password=postgres");
 %>
+<%-- Insert into purchaseorder Code --%>
+<%
+	// Check if an insertion is requested
+	if (action != null && action.equals("purchase")) {
+	
+	    // Begin transaction
+	    conn.setAutoCommit(false);
+	    // update purchaseorder
+	    pstmt = conn
+	    .prepareStatement("INSERT INTO purchaseorder (checkout_date, checkout_time, checkout_id) VALUES (CURRENT_DATE, CURRENT_TIME, ?)");
+	    pstmt.setInt(1, cart_id);
+	    pstmt.executeUpdate();
+	    
+	    // update cart_info
+	    pstmt = conn
+	    .prepareStatement("UPDATE shoppingcart SET status = ? WHERE id = ?");
+	    pstmt.setString(1, "paid");
+	    pstmt.setInt(2, cart_id);
+	    pstmt.executeUpdate();
+	    // Commit transaction
+	    conn.commit();
+	    conn.setAutoCommit(true);
+	}
+%>
 
 <%-- Select code --%>
 <%

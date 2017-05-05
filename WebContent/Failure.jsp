@@ -22,22 +22,22 @@
         } else if (type != null && type.equals("Access")) {
     %>
     	This page is available to owners only<p>
-        <a href="Home.jsp">Return to homepage</a>
+        <a href="Home.jsp">Return to HomePage</a>
     <%
         } else if (type != null && type.equals("InsertCategory")) {
     %>
         Insert Category Failure<p>
-        <a href="Category.jsp">Please try again</a>
+        <a href="Categories.jsp">Please try again</a>
     <%
         } else if (type != null && type.equals("UpdateCategory")) {
     %>
         Update Category Failure<p>
-        <a href="Category.jsp">Please try again</a>
+        <a href="Categories.jsp">Please try again</a>
     <%
         } else if (type != null && type.equals("DeleteCategory")) {
     %> 
         Delete Category Failure<p>
-        <a href="Category.jsp">Please try again</a>
+        <a href="Categories.jsp">Please try again</a>
     <%
         } else if (type != null && type.equals("InvalidUser")) {
         	String wrongName = request.getParameter("WrongName");

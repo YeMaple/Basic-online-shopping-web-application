@@ -89,7 +89,7 @@ Welcome <%=user %> <p>
 		<%
 			}
 		%>
-		<form action="Buy_Shopping_Cart.jsp", method="POST">
+		<form action="Buy_Shopping_cart.jsp", method="POST">
 			<input type = "hidden" name = "user" value = <%=user %>/>
 			<input type = "hidden" name = "role" value = <%=rs.getString("role") %>/>
 			<button>Checkout</button>

@@ -43,7 +43,7 @@
 		conn.setAutoCommit(false);
 		
 		// Get user id
-		pstmt = conn.prepareStatement("SELECT id FROM appuser WHERE name = ?)");
+		pstmt = conn.prepareStatement("SELECT id FROM appuser WHERE name = ?");
 			
 		pstmt.setString(1, user);
 		rs = pstmt.executeQuery();
@@ -73,14 +73,14 @@ Welcome <%=user %><p>
 		<jsp:include page="/Categories_Link.jsp"/>
 		</td>
 		<td>
-		<jsp:include page="/List_Product.jsp"/>
+		<jsp:include page="/List_product.jsp"/>
 		</td>
 	</tr>
 </table>
 <%-- -------- Close Connection Code -------- --%>
 <%
 		// Close the ResultSet
-		rs.close();
+		//rs.close();
 	
 		// Close the Connection
 		conn.close();
