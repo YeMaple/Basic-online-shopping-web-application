@@ -137,15 +137,26 @@
                 if (action != null && action.equals("delete")) {
                     // Begin transaction
                     conn.setAutoCommit(false);
+                    
+                    pstmt = conn.prepareStatement("SELECT COUNT(p) as cnt FROM Product p WHERE p.category_id = ?");
+                	pstmt.setInt(1, Integer.parseInt(request.getParameter("id")));
+                	temp = pstmt.executeQuery();
+                	if (temp.next()) {
+                		if (temp.getInt("cnt") == 0) {
+               
 
-                    // Create prepared statement and use for delete
-                    pstmt = conn.prepareStatement("DELETE FROM Category WHERE id = ?");
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("id")));
-                    int rowCount = pstmt.executeUpdate();
+                    	// Create prepared statement and use for delete
+                   	 	pstmt = conn.prepareStatement("DELETE FROM Category WHERE id = ?");
+                    	pstmt.setInt(1, Integer.parseInt(request.getParameter("id")));
+                    	int rowCount = pstmt.executeUpdate();
 
-                    // Commit
-                    conn.commit();
-                    conn.setAutoCommit(true);
+                		} else {
+                			response.sendRedirect("Categories.jsp?failure="+"DeleteCategory");
+                		}
+                	}
+                	// Commit
+                	conn.commit();
+                	conn.setAutoCommit(true);
                 }
             %>
 
@@ -242,6 +253,8 @@
                 //session.setAttribute("failure", "DeleteCategory");
                 response.sendRedirect("Categories.jsp?failure="+"DeleteCategory");
             }
+        } catch (Exception e) {
+        	response.sendRedirect("Failure.jsp?failure="+"Other");
         }
         finally {
         // Release resources in a finally block in reverse-order of
