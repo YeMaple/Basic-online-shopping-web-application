@@ -89,9 +89,7 @@ String offsetClauses = "OFFSET ?\n";
   if (request.getParameter("col_offset") != null) {
     col_offset = Integer.parseInt(request.getParameter("col_offset"));
   }
-  //System.out.println(groupName);
-  //System.out.println(sortOrder);
-  //System.out.println(category_id);
+  
 
 
 	if(session.getAttribute("roleName") != null) {
@@ -120,33 +118,80 @@ String offsetClauses = "OFFSET ?\n";
 			<td valign="top">
 				<h3>Hello <%= session.getAttribute("personName") %></h3>
 				<h3>Sales Analytics</h3>
-				<form action="analytics.jsp" method="post">
-				<%--
-					int current_selection = 0;
-					if (request.getAttribute("category_id") != null){
-						current_selection = Integer.parseInt(request.getAttribute("category_id").toString());
-					}
-				--%>
+				<form action="analysis.jsp" method="post">
+					<%if(col_offset == 0 && row_offset == 0 ){ %>
 					<p>Group by:</p>
 					<select required name="group_name">
+						<% if(groupName.equals("s")){ %>
 						<option value = 'c'> Customer </option>
+						<option selected value = 's'> State </option>
+						<%}else{ %>
+						<option selected value = 'c'> Customer </option>
 						<option value = 's'> State </option>
+						<%} %>
 					</select>
 					<p>Sort with:</p>
 					<select required name="sort_order">
+						<% if(sortOrder.equals("topk")){ %>
 						<option value = 'alpha'> Alphabetic </option>
+						<option selected value = 'topk'> Top K </option>
+						<%}else{ %>
+						<option selected value = 'alpha'> Alphabetic </option>
 						<option value = 'topk'> Top K </option>
+						<%} %>
 					</select>
 					<p>Product categories:</p>
 					<select required name="category_id">
 						<option value = 0> All</option>
 						<%
-							for (CategoryModel cat : category_list) { %>
+							for (CategoryModel cat : category_list) { 
+								if(cat.getId() == category_id){
+						%>
+								<option selected  value="<%= cat.getId() %>"><%=cat.getCategoryName() %></option>
+						<%		}else{ %>
 								<option value = <%= cat.getId() %>><%= cat.getCategoryName()%></option>
-						<% } %>
+						<% 		}
+							} %>
 					</select>
-          <p> </p>
-          <input type="submit" value="Run Query"></input>
+			        <p> </p>
+			        <input type="submit" value="Run Query"></input>
+			          <%}else{ %>
+			        <p>Group by:</p>
+					<select disabled name="group_name">
+						<% if(groupName.equals("s")){ %>
+						<option value = 'c'> Customer </option>
+						<option selected value = 's'> State </option>
+						<%}else{ %>
+						<option selected value = 'c'> Customer </option>
+						<option value = 's'> State </option>
+						<%} %>
+					</select>
+					<p>Sort with:</p>
+					<select disabled name="sort_order">
+						<% if(sortOrder.equals("topk")){ %>
+						<option value = 'alpha'> Alphabetic </option>
+						<option selected value = 'topk'> Top K </option>
+						<%}else{ %>
+						<option selected value = 'alpha'> Alphabetic </option>
+						<option value = 'topk'> Top K </option>
+						<%} %>
+					</select>
+					<p>Product categories:</p>
+					<select disabled name="category_id">
+						<option value = 0> All</option>
+						<%
+							for (CategoryModel cat : category_list) { 
+								if(cat.getId() == category_id){
+						%>
+								<option selected  value="<%= cat.getId() %>"><%=cat.getCategoryName() %></option>
+						<%		}else{ %>
+								<option value = <%= cat.getId() %>><%= cat.getCategoryName()%></option>
+						<% 		}
+							} %>
+					</select>
+			        <p> </p>
+			        <input disabled type="submit" value="Run Query"></input>
+			        <%} %>
 				</form>
 			</td>
 			<td></td>
@@ -316,12 +361,12 @@ String offsetClauses = "OFFSET ?\n";
           colNext = true;
         }
 %>
-				<table border=1 style="border-collapse: collapse">
+				<table width = 500, height = 500, border=1 style="border-collapse: collapse">
 				  <thead>
 				  <tr>
                     <th> </th>
                     <% for (int i = 0; i < colCount; i++) { %>
-                      <th><p><b><%= colHeader.get(i).getName()%></b> ($<%= colHeader.get(i).getSum() %>)</p></th>
+                      <th><b><%= colHeader.get(i).getName()%></b> ($<%= colHeader.get(i).getSum() %>)</th>
                     <% } %>
                     <% for (int i = 0; i < 10 - colCount; i++) { %>
                       <th> </th>
@@ -331,7 +376,7 @@ String offsetClauses = "OFFSET ?\n";
 				        <tbody>
                   <% for (int i = 0; i < rowCount; i++) { %>
                   <tr>
-                    <td><p><b><%= rowHeader.get(i).getName()%></b> ($<%= rowHeader.get(i).getSum() %>)</p></td>
+                    <th><b><%= rowHeader.get(i).getName()%></b> ($<%= rowHeader.get(i).getSum() %>)</th>
                     <% for (int j = 0; j < colCount; j++) {
                         int row = rowHeader.get(i).getId();
                         int col = colHeader.get(j).getId();
@@ -355,33 +400,33 @@ String offsetClauses = "OFFSET ?\n";
                   <% } %>
 				       </tbody>
 				    </table>
+				    <% if (rowNext) { %>
+					  <form action="analysis.jsp" method="post">
+					    <input type="hidden" name="group_name" value="<%= groupName%>"/>
+					    <input type="hidden" name="sort_order" value="<%= sortOrder%>"/>
+					    <input type="hidden" name="category_id" value="<%= category_id%>"/>
+					    <input type="hidden" name="row_offset" value="<%= row_offset + 20%>"/>
+					    <input type="hidden" name="col_offset" value="<%= col_offset%>"/>
+					    <% if (groupName.equalsIgnoreCase("c")) { %>
+					    <input type="submit" value="Next 20 Customers"/>
+					    <% } else{ %>
+					    <input type="submit" value="Next 20 States"/>
+					    <% } %>
+					  </form>
+					  <% } %>
+					  <% if (colNext) { %>
+					  <form action="analysis.jsp" method="post">
+					    <input type="hidden" name="group_name" value="<%= groupName%>"/>
+					    <input type="hidden" name="sort_order" value="<%= sortOrder%>"/>
+					    <input type="hidden" name="category_id" value="<%= category_id%>"/>
+					    <input type="hidden" name="row_offset" value="<%= row_offset%>"/>
+					    <input type="hidden" name="col_offset" value="<%= col_offset + 10%>"/>
+					    <input type="submit" value="Next 10 Products"/>
+					  </form>
+					  <% } %>
 			</td>
 		</tr>
 	</table>
-  <% if (rowNext) { %>
-  <form action="analytics.jsp" method="post">
-    <input type="hidden" name="group_name" value="<%= groupName%>"/>
-    <input type="hidden" name="sort_order" value="<%= sortOrder%>"/>
-    <input type="hidden" name="category_id" value="<%= category_id%>"/>
-    <input type="hidden" name="row_offset" value="<%= row_offset + 20%>"/>
-    <input type="hidden" name="col_offset" value="<%= col_offset%>"/>
-    <% if (groupName.equalsIgnoreCase("c")) { %>
-    <input type="submit" value="Next 20 Customers"/>
-    <% } else{ %>
-    <input type="submit" value="Next 20 States"/>
-    <% } %>
-  </form>
-  <% } %>
-  <% if (colNext) { %>
-  <form action="analytics.jsp" method="post">
-    <input type="hidden" name="group_name" value="<%= groupName%>"/>
-    <input type="hidden" name="sort_order" value="<%= sortOrder%>"/>
-    <input type="hidden" name="category_id" value="<%= category_id%>"/>
-    <input type="hidden" name="row_offset" value="<%= row_offset%>"/>
-    <input type="hidden" name="col_offset" value="<%= col_offset + 10%>"/>
-    <input type="submit" value="Next 10 Products"/>
-  </form>
-  <% } %>
 <%
 				con.close();
 			} catch (Exception e) {
