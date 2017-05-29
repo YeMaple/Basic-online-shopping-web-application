@@ -361,10 +361,10 @@ String offsetClauses = "OFFSET ?\n";
           colNext = true;
         }
 %>
-				<table width = 500, height = 500, border=1 style="border-collapse: collapse">
+				<table width = 1000, height = 1000, border=1 style="border-collapse: collapse; table-layout:fixed">
 				  <thead>
 				  <tr>
-                    <th> </th>
+                    <th><p>Group\Prod<p></th>
                     <% for (int i = 0; i < colCount; i++) { %>
                       <th><b><%= colHeader.get(i).getName()%></b> ($<%= colHeader.get(i).getSum() %>)</th>
                     <% } %>
