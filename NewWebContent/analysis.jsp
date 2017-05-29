@@ -25,12 +25,14 @@ String [] fromClauses = {
 	"FROM person pe LEFT OUTER JOIN shopping_cart sc ON sc.person_id = pe.id LEFT OUTER JOIN products_in_cart pic ON pic.cart_id = sc.id\n",
 	"FROM product pr LEFT OUTER JOIN products_in_cart pic ON pic.product_id = pr.id LEFT OUTER JOIN shopping_cart sc ON pic.cart_id = sc.id\n",
 	"FROM state st LEFT OUTER JOIN person pe ON st.id = pe.state_id LEFT OUTER JOIN shopping_cart sc ON sc.person_id = pe.id LEFT OUTER JOIN products_in_cart pic ON pic.cart_id = sc.id\n",
-	"FROM shopping_cart sc JOIN products_in_cart ON pic.cart_id = sc.id\n"
+	"FROM shopping_cart sc JOIN products_in_cart ON pic.cart_id = sc.id\n",
+  "FROM person pe LEFT OUTER JOIN shopping_cart sc ON sc.person_id = pe.id LEFT OUTER JOIN products_in_cart pic ON pic.cart_id = sc.id LEFT OUTER JOIN product pr ON pic.product_id = pr.id\n",
+  "FROM state st LEFT OUTER JOIN person pe ON st.id = pe.state_id LEFT OUTER JOIN shopping_cart sc ON sc.person_id = pe.id LEFT OUTER JOIN products_in_cart pic ON pic.cart_id = sc.id LEFT OUTER JOIN product pr ON pic.product_id = pr.id"
 };
 
 String [] whereClauses = {
 	"WHERE sc.is_purchased = TRUE OR sc.is_purchased IS NULL\n",
-	"WHERE (sc.is_purchased = TRUE OR sc.is_purchased IS NULL) AND pr.category_id = ?\n"
+	"WHERE (sc.is_purchased = TRUE OR sc.is_purchased IS NULL) AND (pr.category_id = ? OR pr.category_id IS NULL)\n"
 };
 
 String [] groupClauses = {
@@ -89,7 +91,7 @@ String offsetClauses = "OFFSET ?\n";
   if (request.getParameter("col_offset") != null) {
     col_offset = Integer.parseInt(request.getParameter("col_offset"));
   }
-  
+
 
 
 	if(session.getAttribute("roleName") != null) {
@@ -118,7 +120,7 @@ String offsetClauses = "OFFSET ?\n";
 			<td valign="top">
 				<h3>Hello <%= session.getAttribute("personName") %></h3>
 				<h3>Sales Analytics</h3>
-				<form action="analysis.jsp" method="post">
+				<form action="analytics.jsp" method="post">
 					<%if(col_offset == 0 && row_offset == 0 ){ %>
 					<p>Group by:</p>
 					<select required name="group_name">
@@ -144,7 +146,7 @@ String offsetClauses = "OFFSET ?\n";
 					<select required name="category_id">
 						<option value = 0> All</option>
 						<%
-							for (CategoryModel cat : category_list) { 
+							for (CategoryModel cat : category_list) {
 								if(cat.getId() == category_id){
 						%>
 								<option selected  value="<%= cat.getId() %>"><%=cat.getCategoryName() %></option>
@@ -180,7 +182,7 @@ String offsetClauses = "OFFSET ?\n";
 					<select disabled name="category_id">
 						<option value = 0> All</option>
 						<%
-							for (CategoryModel cat : category_list) { 
+							for (CategoryModel cat : category_list) {
 								if(cat.getId() == category_id){
 						%>
 								<option selected  value="<%= cat.getId() %>"><%=cat.getCategoryName() %></option>
@@ -259,69 +261,77 @@ String offsetClauses = "OFFSET ?\n";
           cellPstmt.setInt(1,row_offset);
           cellPstmt.setInt(2,col_offset);
         } else if (groupName.equalsIgnoreCase("c") && sortOrder.equalsIgnoreCase("alpha") && category_id > 0) {
-          rowQuery = selectClauses[0] + fromClauses[0] + whereClauses[0] + groupClauses[0] + orderClauses[0] + limitClauses[0] + offsetClauses;
+          rowQuery = selectClauses[0] + fromClauses[4] + whereClauses[1] + groupClauses[0] + orderClauses[0] + limitClauses[0] + offsetClauses;
           colQuery = selectClauses[1] + fromClauses[1] + whereClauses[1] + groupClauses[1] + orderClauses[1] + limitClauses[1] + offsetClauses;
           cellQuery = "WITH curr_row AS (" + rowQuery + "),\n" +
                       "curr_col AS (" + colQuery + "),\n" +
                       "cell AS (" + cellClauses[0] + ")\n" +
                       cellContentClauses;
           rowPstmt = con.prepareStatement(rowQuery);
-          rowPstmt.setInt(1, row_offset);
+          rowPstmt.setInt(1, category_id);
+          rowPstmt.setInt(2, row_offset);
           colPstmt = con.prepareStatement(colQuery);
           colPstmt.setInt(1, category_id);
           colPstmt.setInt(2, col_offset);
           cellPstmt = con.prepareStatement(cellQuery);
-          cellPstmt.setInt(1, row_offset);
-          cellPstmt.setInt(2, category_id);
-          cellPstmt.setInt(3, col_offset);
+          cellPstmt.setInt(1, category_id);
+          cellPstmt.setInt(2, row_offset);
+          cellPstmt.setInt(3, category_id);
+          cellPstmt.setInt(4, col_offset);
         } else if (groupName.equalsIgnoreCase("c") && sortOrder.equalsIgnoreCase("topk") && category_id > 0) {
-          rowQuery = selectClauses[0] + fromClauses[0] + whereClauses[0] + groupClauses[0] + orderClauses[3] + limitClauses[0] + offsetClauses;
+          rowQuery = selectClauses[0] + fromClauses[4] + whereClauses[1] + groupClauses[0] + orderClauses[3] + limitClauses[0] + offsetClauses;
           colQuery = selectClauses[1] + fromClauses[1] + whereClauses[1] + groupClauses[1] + orderClauses[4] + limitClauses[1] + offsetClauses;
           cellQuery = "WITH curr_row AS (" + rowQuery + "),\n" +
                       "curr_col AS (" + colQuery + "),\n" +
                       "cell AS (" + cellClauses[0] + ")\n" +
                       cellContentClauses;
           rowPstmt = con.prepareStatement(rowQuery);
-          rowPstmt.setInt(1, row_offset);
+          rowPstmt.setInt(1, category_id);
+          rowPstmt.setInt(2, row_offset);
           colPstmt = con.prepareStatement(colQuery);
           colPstmt.setInt(1, category_id);
           colPstmt.setInt(2, col_offset);
           cellPstmt = con.prepareStatement(cellQuery);
-          cellPstmt.setInt(1, row_offset);
-          cellPstmt.setInt(2, category_id);
-          cellPstmt.setInt(3, col_offset);
+          cellPstmt.setInt(1, category_id);
+          cellPstmt.setInt(2, row_offset);
+          cellPstmt.setInt(3, category_id);
+          cellPstmt.setInt(4, col_offset);
         } else if (groupName.equalsIgnoreCase("s") && sortOrder.equalsIgnoreCase("alpha") && category_id > 0) {
-          rowQuery = selectClauses[2] + fromClauses[2] + whereClauses[0] + groupClauses[2] + orderClauses[2] + limitClauses[0] + offsetClauses;
+          rowQuery = selectClauses[2] + fromClauses[5] + whereClauses[1] + groupClauses[2] + orderClauses[2] + limitClauses[0] + offsetClauses;
           colQuery = selectClauses[1] + fromClauses[1] + whereClauses[1] + groupClauses[1] + orderClauses[1] + limitClauses[1] + offsetClauses;
           cellQuery = "WITH curr_row AS (" + rowQuery + "),\n" +
                       "curr_col AS (" + colQuery + "),\n" +
                       "cell AS (" + cellClauses[1] + ")\n" +
                       cellContentClauses;
           rowPstmt = con.prepareStatement(rowQuery);
-          rowPstmt.setInt(1, row_offset);
+          rowPstmt.setInt(1, category_id);
+          rowPstmt.setInt(2, row_offset);
           colPstmt = con.prepareStatement(colQuery);
           colPstmt.setInt(1, category_id);
           colPstmt.setInt(2, col_offset);
           cellPstmt = con.prepareStatement(cellQuery);
-          cellPstmt.setInt(1, row_offset);
-          cellPstmt.setInt(2, category_id);
-          cellPstmt.setInt(3, col_offset);
+          cellPstmt.setInt(1, category_id);
+          cellPstmt.setInt(2, row_offset);
+          cellPstmt.setInt(3, category_id);
+          cellPstmt.setInt(4, col_offset);
         } else if (groupName.equalsIgnoreCase("s") && sortOrder.equalsIgnoreCase("topk") && category_id > 0) {
-          rowQuery = selectClauses[2] + fromClauses[2] + whereClauses[0] + groupClauses[2] + orderClauses[3] + limitClauses[0] + offsetClauses;
+          rowQuery = selectClauses[2] + fromClauses[5] + whereClauses[1] + groupClauses[2] + orderClauses[3] + limitClauses[0] + offsetClauses;
           colQuery = selectClauses[1] + fromClauses[1] + whereClauses[1] + groupClauses[1] + orderClauses[4] + limitClauses[1] + offsetClauses;
           cellQuery = "WITH curr_row AS (" + rowQuery + "),\n" +
                       "curr_col AS (" + colQuery + "),\n" +
                       "cell AS (" + cellClauses[1] + ")\n" +
                       cellContentClauses;
           rowPstmt = con.prepareStatement(rowQuery);
-          rowPstmt.setInt(1, row_offset);
+          rowPstmt.setInt(1, category_id);
+          rowPstmt.setInt(2, row_offset);
           colPstmt = con.prepareStatement(colQuery);
           colPstmt.setInt(1, category_id);
           colPstmt.setInt(2, col_offset);
           cellPstmt = con.prepareStatement(cellQuery);
-          cellPstmt.setInt(1, row_offset);
-          cellPstmt.setInt(2, category_id);
-          cellPstmt.setInt(3, col_offset);
+          cellPstmt.setInt(1, category_id);
+          cellPstmt.setInt(2, row_offset);
+          cellPstmt.setInt(3, category_id);
+          cellPstmt.setInt(4, col_offset);
         }
 
         rowRs = rowPstmt.executeQuery();
@@ -364,19 +374,19 @@ String offsetClauses = "OFFSET ?\n";
 				<table width = 1000, height = 1000, border=1 style="border-collapse: collapse; table-layout:fixed">
 				  <thead>
 				  <tr>
-                    <th><p>Group\Prod<p></th>
+                    <td><p>Group\Prod<p></td>
                     <% for (int i = 0; i < colCount; i++) { %>
-                      <th><b><%= colHeader.get(i).getName()%></b> ($<%= colHeader.get(i).getSum() %>)</th>
+                      <td><b><%= colHeader.get(i).getName()%></b> ($<%= colHeader.get(i).getSum() %>)</td>
                     <% } %>
                     <% for (int i = 0; i < 10 - colCount; i++) { %>
-                      <th> </th>
+                      <td> </td>
                     <% } %>
                   </tr>
 				        </thead>
 				        <tbody>
                   <% for (int i = 0; i < rowCount; i++) { %>
                   <tr>
-                    <th><b><%= rowHeader.get(i).getName()%></b> ($<%= rowHeader.get(i).getSum() %>)</th>
+                    <td><b><%= rowHeader.get(i).getName()%></b> ($<%= rowHeader.get(i).getSum() %>)</td>
                     <% for (int j = 0; j < colCount; j++) {
                         int row = rowHeader.get(i).getId();
                         int col = colHeader.get(j).getId();
@@ -401,7 +411,7 @@ String offsetClauses = "OFFSET ?\n";
 				       </tbody>
 				    </table>
 				    <% if (rowNext) { %>
-					  <form action="analysis.jsp" method="post">
+					  <form action="analytics.jsp" method="post">
 					    <input type="hidden" name="group_name" value="<%= groupName%>"/>
 					    <input type="hidden" name="sort_order" value="<%= sortOrder%>"/>
 					    <input type="hidden" name="category_id" value="<%= category_id%>"/>
@@ -415,7 +425,7 @@ String offsetClauses = "OFFSET ?\n";
 					  </form>
 					  <% } %>
 					  <% if (colNext) { %>
-					  <form action="analysis.jsp" method="post">
+					  <form action="analytics.jsp" method="post">
 					    <input type="hidden" name="group_name" value="<%= groupName%>"/>
 					    <input type="hidden" name="sort_order" value="<%= sortOrder%>"/>
 					    <input type="hidden" name="category_id" value="<%= category_id%>"/>
