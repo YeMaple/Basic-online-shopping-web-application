@@ -30,7 +30,7 @@
                      "GROUP BY cr.id, cr.person_name, cc.id, cc.product_name\n";
   String cellContentQuery = "SELECT cr.id AS person_id, cr.person_name, cc.id AS product_id, cc.product_name, COALESCE(ce.cell_sum,0) AS sales\n" +
                             "FROM curr_row cr LEFT OUTER JOIN curr_col cc ON TRUE LEFT OUTER JOIN cell ce ON (cr.id = ce.person_id AND cc.id = ce.product_id)\n";
-  String mainQuery = "SELECT c1.product_id AS product1_id, c1.product_name AS product1_name, c2.product_id AS product2_id, c2.product_name AS product2_name, SUM(c1.sales * c2.sales) AS similarity\n" +
+  String mainQuery = "SELECT c1.product_id AS product1_id, c1.product_name AS product1_name, c2.product_id AS product2_id, c2.product_name AS product2_name, (SUM(c1.sales * c2.sales) / SQRT(SUM(c1.sales * c1.sales)) / SQRT(SUM(c2.sales * c2.sales))) AS similarity\n" +
                      "FROM cellcontent c1, cellcontent c2\n" +
                      "WHERE c1.person_id = c2.person_id AND c1.product_id < c2.product_id\n" +
                      "GROUP BY product1_id, product1_name, product2_id, product2_name\n" +

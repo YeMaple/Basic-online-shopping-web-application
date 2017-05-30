@@ -26,8 +26,8 @@ String [] fromClauses = {
 	"FROM product pr LEFT OUTER JOIN products_in_cart pic ON pic.product_id = pr.id LEFT OUTER JOIN shopping_cart sc ON pic.cart_id = sc.id\n",
 	"FROM state st LEFT OUTER JOIN person pe ON st.id = pe.state_id LEFT OUTER JOIN shopping_cart sc ON sc.person_id = pe.id LEFT OUTER JOIN products_in_cart pic ON pic.cart_id = sc.id\n",
 	"FROM shopping_cart sc JOIN products_in_cart ON pic.cart_id = sc.id\n",
-  "FROM person pe LEFT OUTER JOIN shopping_cart sc ON sc.person_id = pe.id LEFT OUTER JOIN products_in_cart pic ON pic.cart_id = sc.id LEFT OUTER JOIN product pr ON (pic.product_id = pr.id AND pr.category_id = ?)\n",
-  "FROM state st LEFT OUTER JOIN person pe ON st.id = pe.state_id LEFT OUTER JOIN shopping_cart sc ON sc.person_id = pe.id LEFT OUTER JOIN products_in_cart pic ON pic.cart_id = sc.id LEFT OUTER JOIN product pr ON (pic.product_id = pr.id AND pr.category_id = ?)\n"
+  "FROM person pe LEFT OUTER JOIN shopping_cart sc ON sc.person_id = pe.id LEFT OUTER JOIN products_in_cart pic ON (pic.cart_id = sc.id AND pic.product_id IN (SELECT pr.id FROM product pr WHERE pr.category_id = ?))\n",
+  "FROM state st LEFT OUTER JOIN person pe ON st.id = pe.state_id LEFT OUTER JOIN shopping_cart sc ON sc.person_id = pe.id LEFT OUTER JOIN products_in_cart pic ON (pic.cart_id = sc.id AND pic.product_id IN (SELECT pr.id FROM product pr WHERE pr.category_id = ?))\n"
 };
 
 String [] whereClauses = {
