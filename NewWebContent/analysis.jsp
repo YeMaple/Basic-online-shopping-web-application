@@ -26,8 +26,8 @@ String [] fromClauses = {
 	"FROM product pr LEFT OUTER JOIN products_in_cart pic ON pic.product_id = pr.id LEFT OUTER JOIN shopping_cart sc ON pic.cart_id = sc.id\n",
 	"FROM state st LEFT OUTER JOIN person pe ON st.id = pe.state_id LEFT OUTER JOIN shopping_cart sc ON sc.person_id = pe.id LEFT OUTER JOIN products_in_cart pic ON pic.cart_id = sc.id\n",
 	"FROM shopping_cart sc JOIN products_in_cart ON pic.cart_id = sc.id\n",
-  "FROM person pe LEFT OUTER JOIN shopping_cart sc ON sc.person_id = pe.id LEFT OUTER JOIN products_in_cart pic ON pic.cart_id = sc.id LEFT OUTER JOIN product pr ON pic.product_id = pr.id\n",
-  "FROM state st LEFT OUTER JOIN person pe ON st.id = pe.state_id LEFT OUTER JOIN shopping_cart sc ON sc.person_id = pe.id LEFT OUTER JOIN products_in_cart pic ON pic.cart_id = sc.id LEFT OUTER JOIN product pr ON pic.product_id = pr.id"
+  "FROM person pe LEFT OUTER JOIN shopping_cart sc ON sc.person_id = pe.id LEFT OUTER JOIN products_in_cart pic ON pic.cart_id = sc.id LEFT OUTER JOIN product pr ON (pic.product_id = pr.id AND pr.category_id = ?)\n",
+  "FROM state st LEFT OUTER JOIN person pe ON st.id = pe.state_id LEFT OUTER JOIN shopping_cart sc ON sc.person_id = pe.id LEFT OUTER JOIN products_in_cart pic ON pic.cart_id = sc.id LEFT OUTER JOIN product pr ON (pic.product_id = pr.id AND pr.category_id = ?)\n"
 };
 
 String [] whereClauses = {
@@ -261,7 +261,7 @@ String offsetClauses = "OFFSET ?\n";
           cellPstmt.setInt(1,row_offset);
           cellPstmt.setInt(2,col_offset);
         } else if (groupName.equalsIgnoreCase("c") && sortOrder.equalsIgnoreCase("alpha") && category_id > 0) {
-          rowQuery = selectClauses[0] + fromClauses[4] + whereClauses[1] + groupClauses[0] + orderClauses[0] + limitClauses[0] + offsetClauses;
+          rowQuery = selectClauses[0] + fromClauses[4] + whereClauses[0] + groupClauses[0] + orderClauses[0] + limitClauses[0] + offsetClauses;
           colQuery = selectClauses[1] + fromClauses[1] + whereClauses[1] + groupClauses[1] + orderClauses[1] + limitClauses[1] + offsetClauses;
           cellQuery = "WITH curr_row AS (" + rowQuery + "),\n" +
                       "curr_col AS (" + colQuery + "),\n" +
@@ -279,7 +279,7 @@ String offsetClauses = "OFFSET ?\n";
           cellPstmt.setInt(3, category_id);
           cellPstmt.setInt(4, col_offset);
         } else if (groupName.equalsIgnoreCase("c") && sortOrder.equalsIgnoreCase("topk") && category_id > 0) {
-          rowQuery = selectClauses[0] + fromClauses[4] + whereClauses[1] + groupClauses[0] + orderClauses[3] + limitClauses[0] + offsetClauses;
+          rowQuery = selectClauses[0] + fromClauses[4] + whereClauses[0] + groupClauses[0] + orderClauses[3] + limitClauses[0] + offsetClauses;
           colQuery = selectClauses[1] + fromClauses[1] + whereClauses[1] + groupClauses[1] + orderClauses[4] + limitClauses[1] + offsetClauses;
           cellQuery = "WITH curr_row AS (" + rowQuery + "),\n" +
                       "curr_col AS (" + colQuery + "),\n" +
@@ -297,7 +297,7 @@ String offsetClauses = "OFFSET ?\n";
           cellPstmt.setInt(3, category_id);
           cellPstmt.setInt(4, col_offset);
         } else if (groupName.equalsIgnoreCase("s") && sortOrder.equalsIgnoreCase("alpha") && category_id > 0) {
-          rowQuery = selectClauses[2] + fromClauses[5] + whereClauses[1] + groupClauses[2] + orderClauses[2] + limitClauses[0] + offsetClauses;
+          rowQuery = selectClauses[2] + fromClauses[5] + whereClauses[0] + groupClauses[2] + orderClauses[2] + limitClauses[0] + offsetClauses;
           colQuery = selectClauses[1] + fromClauses[1] + whereClauses[1] + groupClauses[1] + orderClauses[1] + limitClauses[1] + offsetClauses;
           cellQuery = "WITH curr_row AS (" + rowQuery + "),\n" +
                       "curr_col AS (" + colQuery + "),\n" +
@@ -315,7 +315,7 @@ String offsetClauses = "OFFSET ?\n";
           cellPstmt.setInt(3, category_id);
           cellPstmt.setInt(4, col_offset);
         } else if (groupName.equalsIgnoreCase("s") && sortOrder.equalsIgnoreCase("topk") && category_id > 0) {
-          rowQuery = selectClauses[2] + fromClauses[5] + whereClauses[1] + groupClauses[2] + orderClauses[3] + limitClauses[0] + offsetClauses;
+          rowQuery = selectClauses[2] + fromClauses[5] + whereClauses[0] + groupClauses[2] + orderClauses[3] + limitClauses[0] + offsetClauses;
           colQuery = selectClauses[1] + fromClauses[1] + whereClauses[1] + groupClauses[1] + orderClauses[4] + limitClauses[1] + offsetClauses;
           cellQuery = "WITH curr_row AS (" + rowQuery + "),\n" +
                       "curr_col AS (" + colQuery + "),\n" +
