@@ -1,2 +1,2 @@
-# CSE-135-Pro
-Datui Fan
+# Basic online shopping web application
+By Ye Feng, Fan Fan
